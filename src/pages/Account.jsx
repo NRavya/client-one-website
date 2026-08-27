@@ -1,0 +1,267 @@
+import React, { useState, useEffect } from 'react';
+import InfoPage from '../components/InfoPage';
+import { LogOut, Package, ChevronDown, ChevronUp } from 'lucide-react';
+
+const API = '/api';
+
+const inputStyle = {
+  width: '100%',
+  padding: '0.9rem 1rem',
+  border: '1px solid var(--color-border)',
+  borderRadius: '8px',
+  fontFamily: 'inherit',
+  fontSize: '0.95rem',
+  backgroundColor: 'var(--color-bg)',
+};
+
+const statusColors = {
+  PENDING_PAYMENT: { bg: '#FFF3CD', text: '#856404' },
+  PAID: { bg: '#D4EDDA', text: '#155724' },
+  PROCESSING: { bg: '#CCE5FF', text: '#004085' },
+  SHIPPED: { bg: '#D1ECF1', text: '#0C5460' },
+  DELIVERED: { bg: '#D4EDDA', text: '#155724' },
+  CANCELLED: { bg: '#F8D7DA', text: '#721C24' },
+  FAILED: { bg: '#F8D7DA', text: '#721C24' },
+  REFUNDED: { bg: '#E2E3E5', text: '#383D41' },
+};
+
+const statusLabels = {
+  PENDING_PAYMENT: 'Pending Payment',
+  PAID: 'Paid',
+  PROCESSING: 'Processing',
+  SHIPPED: 'Shipped',
+  DELIVERED: 'Delivered',
+  CANCELLED: 'Cancelled',
+  FAILED: 'Failed',
+  REFUNDED: 'Refunded',
+};
+
+const Account = () => {
+  const [token, setToken] = useState(() => localStorage.getItem('eskraft-token'));
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('eskraft-user');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const [expandedOrder, setExpandedOrder] = useState(null);
+
+  const [mode, setMode] = useState('login');
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const fetchOrders = async (jwt) => {
+    setLoadingOrders(true);
+    try {
+      const res = await fetch(`${API}/orders/my-orders`, {
+        headers: { Authorization: `Bearer ${jwt}` },
+      });
+      const data = await res.json();
+      if (data.success) setOrders(data.data);
+    } catch {
+      // silent
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token && user) fetchOrders(token);
+  }, [token, user]);
+
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+
+    const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
+    const body = mode === 'login'
+      ? { email: form.email, password: form.password }
+      : { name: form.name, email: form.email, phone: form.phone, password: form.password };
+
+    try {
+      const res = await fetch(`${API}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        setAuthError(data.error?.message || 'Something went wrong');
+        return;
+      }
+
+      localStorage.setItem('eskraft-token', data.data.token);
+      localStorage.setItem('eskraft-user', JSON.stringify(data.data.user));
+      setToken(data.data.token);
+      setUser(data.data.user);
+    } catch {
+      setAuthError('Could not connect to server');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('eskraft-token');
+    localStorage.removeItem('eskraft-user');
+    setToken(null);
+    setUser(null);
+    setOrders([]);
+    setForm({ name: '', email: '', phone: '', password: '' });
+  };
+
+  if (!token || !user) {
+    return (
+      <InfoPage title="Account" subtitle="Sign in to track orders and manage your account.">
+        <div style={{ maxWidth: '420px' }}>
+          <div className="flex gap-sm mb-6">
+            <button
+              type="button"
+              className="btn"
+              style={{ flex: 1, padding: '0.75rem', fontSize: '0.8rem', opacity: mode === 'login' ? 1 : 0.5 }}
+              onClick={() => { setMode('login'); setAuthError(''); }}
+            >
+              SIGN IN
+            </button>
+            <button
+              type="button"
+              className="btn"
+              style={{ flex: 1, padding: '0.75rem', fontSize: '0.8rem', opacity: mode === 'register' ? 1 : 0.5 }}
+              onClick={() => { setMode('register'); setAuthError(''); }}
+            >
+              CREATE ACCOUNT
+            </button>
+          </div>
+
+          {authError && (
+            <div style={{ padding: '0.75rem 1rem', marginBottom: '1rem', borderRadius: '8px', backgroundColor: '#F8D7DA', color: '#721C24', fontSize: '0.875rem' }}>
+              {authError}
+            </div>
+          )}
+
+          <form onSubmit={handleAuth} className="flex flex-col gap-sm">
+            {mode === 'register' && (
+              <input name="name" value={form.name} onChange={handleChange} required placeholder="Your name" style={inputStyle} aria-label="Your name" />
+            )}
+            <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="Email" style={inputStyle} aria-label="Email" />
+            {mode === 'register' && (
+              <input name="phone" type="tel" value={form.phone} onChange={handleChange} placeholder="Phone (optional)" style={inputStyle} aria-label="Phone" />
+            )}
+            <input name="password" type="password" value={form.password} onChange={handleChange} required minLength={6} placeholder="Password" style={inputStyle} aria-label="Password" />
+            <button type="submit" className="btn" disabled={authLoading}>
+              {authLoading ? 'PLEASE WAIT...' : mode === 'login' ? 'SIGN IN' : 'CREATE ACCOUNT'}
+            </button>
+          </form>
+        </div>
+      </InfoPage>
+    );
+  }
+
+  return (
+    <InfoPage title={`Hey, ${user.name}!`} subtitle="Welcome to your ESKRAFT account.">
+      <div className="flex justify-between items-center mb-8" style={{ maxWidth: '800px', margin: '0 auto 2rem' }}>
+        <p className="text-sm text-gray" style={{ textTransform: 'none' }}>
+          Signed in as <strong>{user.email}</strong>
+        </p>
+        <button type="button" className="btn btn-outline" style={{ padding: '0.6rem 1.2rem', fontSize: '0.75rem' }} onClick={handleLogout}>
+          <LogOut size={14} /> SIGN OUT
+        </button>
+      </div>
+
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <h2 className="text-2xl font-black mb-6" style={{ fontFamily: 'var(--font-heading)' }}>YOUR ORDERS</h2>
+
+        {loadingOrders ? (
+          <p className="text-gray">Loading orders...</p>
+        ) : orders.length === 0 ? (
+          <div className="flex flex-col items-center text-center gap-sm" style={{ padding: '3rem', backgroundColor: '#F5F3ED', borderRadius: '12px' }}>
+            <Package size={40} style={{ color: 'var(--color-wood-dark)', opacity: 0.5 }} />
+            <h3 className="font-bold">No orders yet</h3>
+            <p className="text-sm text-gray" style={{ textTransform: 'none', fontWeight: 400 }}>
+              Once you place an order, it will appear here.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-sm">
+            {orders.map((order) => {
+              const isExpanded = expandedOrder === order.id;
+              const color = statusColors[order.status] || { bg: '#E2E3E5', text: '#383D41' };
+              const label = statusLabels[order.status] || order.status;
+
+              return (
+                <div key={order.id} style={{ border: '1px solid var(--color-border)', borderRadius: '12px', overflow: 'hidden' }}>
+                  <button
+                    type="button"
+                    onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
+                    style={{
+                      width: '100%', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center',
+                      justifyContent: 'space-between', gap: '1rem', backgroundColor: '#F5F3ED',
+                      textAlign: 'left', cursor: 'pointer', border: 'none',
+                    }}
+                  >
+                    <div className="flex items-center gap-sm" style={{ flexWrap: 'wrap' }}>
+                      <span className="font-bold text-sm">{order.orderNumber}</span>
+                      <span
+                        className="badge"
+                        style={{ backgroundColor: color.bg, color: color.text, fontSize: '0.6rem', fontWeight: 700 }}
+                      >
+                        {label}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-sm">
+                      <span className="text-sm text-gray" style={{ textTransform: 'none' }}>
+                        {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                      <span className="text-sm font-bold">₹{order.total.toLocaleString('en-IN')}</span>
+                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </div>
+                  </button>
+
+                  {isExpanded && (
+                    <div style={{ padding: '1.25rem' }}>
+                      <div className="flex flex-col gap-xs">
+                        {order.items.map((item) => (
+                          <div key={item.id} className="flex justify-between items-center" style={{ padding: '0.5rem 0', borderBottom: '1px solid var(--color-border)' }}>
+                            <div>
+                              <span className="font-bold text-sm">{item.product?.name || 'Product'}</span>
+                              <span className="text-sm text-gray" style={{ marginLeft: '0.5rem' }}>× {item.quantity}</span>
+                            </div>
+                            <span className="text-sm">₹{item.subtotal.toLocaleString('en-IN')}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--color-border)' }}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray">Subtotal</span>
+                          <span>₹{order.subtotal.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray">Shipping</span>
+                          <span>{order.shippingFee === 0 ? 'FREE' : `₹${order.shippingFee}`}</span>
+                        </div>
+                        <div className="flex justify-between font-bold" style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--color-border)' }}>
+                          <span>Total</span>
+                          <span>₹{order.total.toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray mt-4" style={{ textTransform: 'none' }}>
+                        Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </InfoPage>
+  );
+};
+
+export default Account;

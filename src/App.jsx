@@ -1,0 +1,67 @@
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import Header from './components/Header';
+import AnnouncementBar from './components/AnnouncementBar';
+import Footer from './components/Footer';
+import CartDrawer from './components/CartDrawer';
+import { CartProvider } from './context/CartContext';
+
+import Home from './pages/Home';
+import Product from './pages/Product';
+import Category from './pages/Category';
+import CustomOrders from './pages/CustomOrders';
+import About from './pages/About';
+import Cart from './pages/Cart';
+import SearchResults from './pages/SearchResults';
+import Account from './pages/Account';
+import TrackOrder from './pages/TrackOrder';
+import Admin from './pages/Admin';
+import ShippingReturns from './pages/ShippingReturns';
+import Contact from './pages/Contact';
+import Faq from './pages/Faq';
+import Terms from './pages/Terms';
+import NotFound from './pages/NotFound';
+
+const ScrollToTop = () => {
+  const { pathname, search } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname, search]);
+  return null;
+};
+
+function App() {
+  return (
+    <CartProvider>
+      <Router>
+        <ScrollToTop />
+        <AnnouncementBar />
+        <Header />
+        <main style={{ minHeight: '80vh' }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/product/:slug" element={<Product />} />
+            <Route path="/category" element={<Category />} />
+            <Route path="/category/:category" element={<Category />} />
+            <Route path="/custom-orders" element={<CustomOrders />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/search" element={<SearchResults />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/track-order" element={<TrackOrder />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/shipping-returns" element={<ShippingReturns />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <Footer />
+        <CartDrawer />
+      </Router>
+    </CartProvider>
+  );
+}
+
+export default App;

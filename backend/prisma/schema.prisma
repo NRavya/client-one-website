@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String     @unique
+  phone     String?
+  password  String
+  role      Role       @default(CUSTOMER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  customer  Customer?
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  SUPER_ADMIN
+}
+
+model Customer {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  name      String
+  email     String     @unique
+  phone     String?
+  address   String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  orders    Order[]
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  slug        String      @unique
+  name        String
+  description String?
+  price       Float
+  stock       Int         @default(0)
+  image       String?
+  category    String?
+  type        String?
+  badge       String?
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id            String       @id @default(uuid())
+  orderNumber   String       @unique
+  customerId    String
+  customer      Customer     @relation(fields: [customerId], references: [id])
+  status        OrderStatus  @default(PENDING_PAYMENT)
+  paymentStatus PaymentStatus @default(PENDING)
+  subtotal      Float
+  tax           Float        @default(0)
+  shippingFee   Float        @default(0)
+  discount      Float        @default(0)
+  total         Float
+  currency      String       @default("INR")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  items         OrderItem[]
+  payments      Payment[]
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  unitPrice Float
+  subtotal  Float
+}
+
+model Payment {
+  id                  String        @id @default(uuid())
+  orderId             String
+  order               Order         @relation(fields: [orderId], references: [id])
+  provider            String        @default("CASHFREE")
+  providerOrderId     String?       @unique
+  providerPaymentId   String?       @unique
+  amount              Float
+  currency            String        @default("INR")
+  status              PaymentStatus @default(PENDING)
+  paymentMethod       String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+}
