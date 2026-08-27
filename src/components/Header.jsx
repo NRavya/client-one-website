@@ -49,7 +49,9 @@ const Header = () => {
                   to={link.to}
                   className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
                 >
-                  {link.label}
+                  <span className="nav-link-content">
+                    {link.label}
+                  </span>
                 </NavLink>
               ))}
             </nav>
@@ -218,44 +220,61 @@ const Header = () => {
           background-color: rgba(0, 0, 0, 0.06);
         }
 
-        /* ── Desktop nav ── */
+/* ── Desktop nav ── */
         .desktop-nav {
           display: flex;
           align-items: center;
-          gap: 0.1rem;
+          gap: 0.25rem;
         }
 
         .nav-link {
           font-family: var(--font-heading);
-          font-size: 0.72rem;
-          font-weight: 600;
-          letter-spacing: 0.12em;
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
           color: var(--color-text);
-          opacity: 0.65;
-          padding: 6px 10px;
-          border-radius: 4px;
+          opacity: 0.75;
+          padding: 8px 14px;
+          border-radius: 6px;
           position: relative;
           transition: opacity var(--transition-fast), background-color var(--transition-fast);
           white-space: nowrap;
+          display: flex;
+          align-items: center;
+        }
+
+        .nav-link-content {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
         }
 
         .nav-link::after {
           content: '';
           position: absolute;
-          bottom: 2px;
-          left: 10px;
-          right: 10px;
-          height: 1.5px;
+          bottom: 3px;
+          left: 14px;
+          right: 14px;
+          height: 2px;
           background-color: var(--color-wood-dark);
           transform: scaleX(0);
           transform-origin: left;
           transition: transform var(--transition-fast);
         }
 
-        .nav-link:hover { opacity: 1; background-color: rgba(0,0,0,0.04); }
+        .nav-link:hover { opacity: 1; background-color: rgba(0,0,0,0.05); }
         .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
         .nav-link.active { opacity: 1; }
+
+        .nav-link svg {
+          flex-shrink: 0;
+          opacity: 0.7;
+        }
+
+        .nav-link:hover svg, .nav-link.active svg {
+          opacity: 1;
+        }
 
         /* ── Cart badge ── */
         .cart-badge {
@@ -343,9 +362,9 @@ const Header = () => {
           width: 100%;
           padding: 1rem 0;
           font-family: var(--font-heading);
-          font-size: 1.05rem;
+          font-size: 1.1rem;
           font-weight: 700;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--color-text);
           border-bottom: 1px solid var(--color-border);
@@ -378,9 +397,11 @@ const Header = () => {
         }
 
         @media (min-width: 1024px) {
-          .header-inner { height: 80px; }
-          .desktop-nav  { gap: 0.25rem; }
-          .nav-link     { font-size: 0.75rem; padding: 6px 14px; }
+          .header-inner { height: 88px; }
+          .desktop-nav  { gap: 0.5rem; }
+          .nav-link     { font-size: 0.85rem; padding: 10px 18px; }
+          .nav-link::after { bottom: 4px; left: 18px; right: 18px; }
+          .header-right { gap: 0.75rem; }
         }
 
       `}</style>

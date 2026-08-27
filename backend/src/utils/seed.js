@@ -11,7 +11,7 @@ async function main() {
   const products = JSON.parse(fs.readFileSync(file, 'utf8'));
   for (const p of products) {
     const image = Array.isArray(p.images) ? p.images[0] : (p.image || null);
-    const data = { slug: p.slug, name: p.name, description: p.description || p.shortDescription || '', price: p.price, stock: p.stock ?? 100, image, category: p.category, type: p.type, badge: p.badge || null, active: true };
+    const data = { product_code: p.product_code, product_name: p.product_name, slug: p.slug, name: p.name, description: p.description || p.shortDescription || '', price: p.price, stock: p.stock ?? 100, image, category: p.category, type: p.type, badge: p.badge || null, active: true };
     await prisma.product.upsert({ where: { slug: p.slug }, update: data, create: data });
   }
   console.log(`Seeded ${products.length} products`);

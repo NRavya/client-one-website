@@ -34,6 +34,13 @@ const getProductBySlug = async (req, res) => {
 // Admin endpoints
 const createProduct = async (req, res) => {
   try {
+    const { product_code, product_name } = req.body;
+    // strict validation against master catalog
+    try {
+      const { validateProduct } = await import('../catalog/validateCatalog.js');
+      const r = validateProduct(product_code, product_name);
+      if (!r.valid) return res.status(400).json({ success: false, error: { code: 'INVALID_CATALOG', message: r.reason } });
+    } catch {}
     const product = await prisma.product.create({ data: req.body });
     res.status(201).json({ success: true, data: product });
   } catch (error) {

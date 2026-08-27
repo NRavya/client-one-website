@@ -1,16 +1,18 @@
 [
   {
-    "id": "prod_new_1",
-    "slug": "can-t-rush-greatness",
-    "name": "Can't Rush Greatness",
+    "id": "ESKANM0001",
+    "product_code": "ESKANM0001",
+    "product_name": "Cat",
+    "slug": "eskanm0001",
+    "name": "Cat",
+    "description": "Elevate your space with this premium Can't rush greatness. Handcrafted with precision and care.",
     "price": 80,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Can't rush greatness",
-    "description": "Elevate your space with this premium Can't rush greatness. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
+    "category": "Engraved Wooden Crafts",
+    "type": "Art & Decor",
     "images": [
-      "/assets/Can't rush greatness.avif"
+      "/assets/ESKANM0001 - Cat.png"
     ],
     "stock": 20,
     "badge": null,
@@ -26,17 +28,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_2",
-    "slug": "chill",
-    "name": "CHILL",
+    "id": "ESKANM0002",
+    "product_code": "ESKANM0002",
+    "product_name": "Cat 2",
+    "slug": "eskanm0002",
+    "name": "Cat 2",
+    "description": "Elevate your space with this premium Chill. Handcrafted with precision and care.",
     "price": 80,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Chill",
-    "description": "Elevate your space with this premium Chill. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
+    "category": "Engraved Wooden Crafts",
+    "type": "Art & Decor",
     "images": [
-      "/assets/Chill.avif"
+      "/assets/ESKANM0002 - Cat 2.png"
     ],
     "stock": 20,
     "badge": "NEW",
@@ -52,563 +56,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_3",
-    "slug": "consistency",
-    "name": "Consistency",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted consistency",
-    "description": "Elevate your space with this premium consistency. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/consistency.png"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 46,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": true
-  },
-  {
-    "id": "prod_new_4",
-    "slug": "dream-it-believe-it-achieve-it-",
-    "name": "Dream it! Believe it! Achieve it!",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Dream it ! Believe it ! Achieve it!",
-    "description": "Elevate your space with this premium Dream it ! Believe it ! Achieve it!. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/Dream it ! Believe it ! Achieve it!.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 25,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": true,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_5",
-    "slug": "dreamcatcher",
-    "name": "Dreamcatcher",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Dreamcatcher",
-    "description": "Elevate your space with this premium Dreamcatcher. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/Dreamcatcher.avif"
-    ],
-    "stock": 20,
-    "badge": "NEW",
-    "rating": 4.8,
-    "reviews": 19,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_6",
-    "slug": "ew-people",
-    "name": "Eww... People.",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Ew people",
-    "description": "Elevate your space with this premium Ew people. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/Ew people.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 44,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_7",
-    "slug": "it-s-just-a-bad-day-not-a-bad-life",
-    "name": "It's just a bad day, not a bad life",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted It's just a bad day,not a bad life",
-    "description": "Elevate your space with this premium It's just a bad day,not a bad life. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/It's just a bad day,not a bad life.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 11,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": true
-  },
-  {
-    "id": "prod_new_8",
-    "slug": "main-character-energy",
-    "name": "Main Character Energy",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted main character energy",
-    "description": "Elevate your space with this premium main character energy. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/main character energy.avif"
-    ],
-    "stock": 20,
-    "badge": "NEW",
-    "rating": 4.8,
-    "reviews": 51,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_9",
-    "slug": "music-is-my-drug",
-    "name": "Music is my Drug",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Music is my drug",
-    "description": "Elevate your space with this premium Music is my drug. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/Music is my drug.png"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 22,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": true,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_10",
-    "slug": "no-risk-no-story",
-    "name": "No Risk. No Story.",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted No risk no story",
-    "description": "Elevate your space with this premium No risk no story. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/No risk no story.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 93,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_11",
-    "slug": "original",
-    "name": "Original",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted original",
-    "description": "Elevate your space with this premium original. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/original.avif"
-    ],
-    "stock": 20,
-    "badge": "NEW",
-    "rating": 4.8,
-    "reviews": 19,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": true
-  },
-  {
-    "id": "prod_new_12",
-    "slug": "staying-delulu-is-the-solulu",
-    "name": "Delulu is the solulu",
-    "price": 80,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Staying delulu is the solulu",
-    "description": "Elevate your space with this premium Staying delulu is the solulu. Handcrafted with precision and care.",
-    "category": "Dog Tag Keychain",
-    "type": "Personalized",
-    "images": [
-      "/assets/Staying delulu is the solulu.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 57,
-    "tags": [
-      "dog-tag keychain",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_13",
-    "slug": "demon-slayer-1",
-    "name": "Anime – Demon Slayer 1",
-    "price": 200,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Demon Slayer - 1",
-    "description": "Elevate your space with this premium Demon Slayer - 1. Handcrafted with precision and care.",
-    "category": "Anime Phone Stand",
-    "type": "Desk Accessory",
-    "images": [
-      "/assets/Demon Slayer - 1.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 38,
-    "tags": [
-      "anime-phone stand",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_14",
-    "slug": "demon-slayer-2",
-    "name": "Anime – Demon Slayer 2",
-    "price": 200,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Demon Slayer - 2",
-    "description": "Elevate your space with this premium Demon Slayer - 2. Handcrafted with precision and care.",
-    "category": "Anime Phone Stand",
-    "type": "Desk Accessory",
-    "images": [
-      "/assets/Demon Slayer - 2.avif"
-    ],
-    "stock": 20,
-    "badge": "NEW",
-    "rating": 4.8,
-    "reviews": 33,
-    "tags": [
-      "anime-phone stand",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": true,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_15",
-    "slug": "jujutsu-kaisen-1",
-    "name": "Anime – Jujutsu Kaisen – 1",
-    "price": 200,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Jujutsu Kaisen - 1",
-    "description": "Elevate your space with this premium Jujutsu Kaisen - 1. Handcrafted with precision and care.",
-    "category": "Anime Phone Stand",
-    "type": "Desk Accessory",
-    "images": [
-      "/assets/Jujutsu Kaisen - 1.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 75,
-    "tags": [
-      "anime-phone stand",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": true
-  },
-  {
-    "id": "prod_new_16",
-    "slug": "jujutsu-kaisen-2",
-    "name": "Anime – Jujutsu Kaisen – 2",
-    "price": 200,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Jujutsu Kaisen - 2",
-    "description": "Elevate your space with this premium Jujutsu Kaisen - 2. Handcrafted with precision and care.",
-    "category": "Anime Phone Stand",
-    "type": "Desk Accessory",
-    "images": [
-      "/assets/Jujutsu Kaisen - 2.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 51,
-    "tags": [
-      "anime-phone stand",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_17",
-    "slug": "one-piece-1",
-    "name": "Anime – One Piece – 1",
-    "price": 200,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted One piece - 1",
-    "description": "Elevate your space with this premium One piece - 1. Handcrafted with precision and care.",
-    "category": "Anime Phone Stand",
-    "type": "Desk Accessory",
-    "images": [
-      "/assets/One piece - 1.avif"
-    ],
-    "stock": 20,
-    "badge": "NEW",
-    "rating": 4.8,
-    "reviews": 104,
-    "tags": [
-      "anime-phone stand",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_18",
-    "slug": "one-piece",
-    "name": "Anime – One Piece – 2",
-    "price": 200,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted One piece",
-    "description": "Elevate your space with this premium One piece. Handcrafted with precision and care.",
-    "category": "Anime Phone Stand",
-    "type": "Desk Accessory",
-    "images": [
-      "/assets/One piece.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 48,
-    "tags": [
-      "anime-phone stand",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_19",
-    "slug": "coolers-dog",
-    "name": "Coolers Dog",
-    "price": 70,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Coolers Dog",
-    "description": "Elevate your space with this premium Coolers Dog. Handcrafted with precision and care.",
-    "category": "Engraved Wooden Crafts",
-    "type": "Art & Decor",
-    "images": [
-      "/assets/Coolers Dog.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 17,
-    "tags": [
-      "engraved-wooden crafts",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": true,
-    "isNewArrival": true,
-    "isBestseller": true
-  },
-  {
-    "id": "prod_new_20",
-    "slug": "doodle-cat",
-    "name": "Doodle Cat",
-    "price": 70,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Doodle Cat",
-    "description": "Elevate your space with this premium Doodle Cat. Handcrafted with precision and care.",
-    "category": "Engraved Wooden Crafts",
-    "type": "Art & Decor",
-    "images": [
-      "/assets/Doodle Cat.avif"
-    ],
-    "stock": 20,
-    "badge": "NEW",
-    "rating": 4.8,
-    "reviews": 80,
-    "tags": [
-      "engraved-wooden crafts",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_21",
-    "slug": "flower-cat",
-    "name": "Flower Cat",
-    "price": 70,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Flower Cat",
-    "description": "Elevate your space with this premium Flower Cat. Handcrafted with precision and care.",
-    "category": "Engraved Wooden Crafts",
-    "type": "Art & Decor",
-    "images": [
-      "/assets/Flower Cat.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 51,
-    "tags": [
-      "engraved-wooden crafts",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_22",
-    "slug": "flower-dog",
-    "name": "Flower Dog",
-    "price": 70,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Flower Dog",
-    "description": "Elevate your space with this premium Flower Dog. Handcrafted with precision and care.",
-    "category": "Engraved Wooden Crafts",
-    "type": "Art & Decor",
-    "images": [
-      "/assets/Flower Dog.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 34,
-    "tags": [
-      "engraved-wooden crafts",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_23",
-    "slug": "hibiscus",
-    "name": "Hibiscus",
-    "price": 70,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Hibiscus",
-    "description": "Elevate your space with this premium Hibiscus. Handcrafted with precision and care.",
-    "category": "Engraved Wooden Crafts",
-    "type": "Art & Decor",
-    "images": [
-      "/assets/Hibiscus.avif"
-    ],
-    "stock": 20,
-    "badge": "NEW",
-    "rating": 4.8,
-    "reviews": 15,
-    "tags": [
-      "engraved-wooden crafts",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": true
-  },
-  {
-    "id": "prod_new_24",
-    "slug": "rose",
+    "id": "ESKANM0003",
+    "product_code": "ESKANM0003",
+    "product_name": "Rose",
+    "slug": "eskanm0003",
     "name": "Rose",
+    "description": "Elevate your space with this premium Rose. Handcrafted with precision and care.",
     "price": 70,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Rose",
-    "description": "Elevate your space with this premium Rose. Handcrafted with precision and care.",
     "category": "Engraved Wooden Crafts",
     "type": "Art & Decor",
     "images": [
-      "/assets/Rose.avif"
+      "/assets/ESKANM0003 - Rose.png"
     ],
     "stock": 20,
     "badge": null,
@@ -624,76 +84,26 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_25",
-    "slug": "sitting-cat-2",
-    "name": "Sitting Cat-2",
+    "id": "ESKANM0004",
+    "product_code": "ESKANM0004",
+    "product_name": "Hibiscus",
+    "slug": "eskanm0004",
+    "name": "Hibiscus",
+    "description": "Elevate your space with this premium Hibiscus. Handcrafted with precision and care.",
     "price": 70,
     "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Sitting Cat - 2",
-    "description": "Elevate your space with this premium Sitting Cat - 2. Handcrafted with precision and care.",
+    "shortDescription": "Premium handcrafted Hibiscus",
     "category": "Engraved Wooden Crafts",
     "type": "Art & Decor",
     "images": [
-      "/assets/Sitting Cat - 2.avif"
-    ],
-    "stock": 20,
-    "badge": null,
-    "rating": 4.8,
-    "reviews": 16,
-    "tags": [
-      "engraved-wooden crafts",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_26",
-    "slug": "sitting-cat",
-    "name": "Sitting Cat",
-    "price": 70,
-    "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Sitting Cat",
-    "description": "Elevate your space with this premium Sitting Cat. Handcrafted with precision and care.",
-    "category": "Engraved Wooden Crafts",
-    "type": "Art & Decor",
-    "images": [
-      "/assets/Sitting Cat.avif"
+      "/assets/ESKANM0004 - Hibiscus.png"
     ],
     "stock": 20,
     "badge": "NEW",
     "rating": 4.8,
-    "reviews": 48,
+    "reviews": 15,
     "tags": [
       "engraved-wooden crafts",
-      "premium",
-      "handcrafted"
-    ],
-    "isFeatured": false,
-    "isNewArrival": true,
-    "isBestseller": false
-  },
-  {
-    "id": "prod_new_27",
-    "slug": "achilles-the-odyssey",
-    "name": "Achilles | The Odyssey",
-    "price": 680,
-    "compareAtPrice": 800,
-    "shortDescription": "Premium handcrafted Achilles - The odyssey",
-    "description": "Elevate your space with this premium Achilles - The odyssey. Handcrafted with precision and care.",
-    "category": "Frames",
-    "type": "Wall Decor",
-    "images": [
-      "/assets/Achilles - The odyssey.avif"
-    ],
-    "stock": 20,
-    "badge": "SALE",
-    "rating": 4.8,
-    "reviews": 83,
-    "tags": [
-      "frames",
       "premium",
       "handcrafted"
     ],
@@ -702,24 +112,26 @@
     "isBestseller": true
   },
   {
-    "id": "prod_new_28",
-    "slug": "jaguar",
-    "name": "Jaguar",
-    "price": 800,
+    "id": "ESKANM0005",
+    "product_code": "ESKANM0005",
+    "product_name": "Dog with flower bow",
+    "slug": "eskanm0005",
+    "name": "Dog with flower bow",
+    "description": "Elevate your space with this premium Flower Cat. Handcrafted with precision and care.",
+    "price": 70,
     "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Jaguar",
-    "description": "Elevate your space with this premium Jaguar. Handcrafted with precision and care.",
-    "category": "Frames",
-    "type": "Wall Decor",
+    "shortDescription": "Premium handcrafted Flower Cat",
+    "category": "Engraved Wooden Crafts",
+    "type": "Art & Decor",
     "images": [
-      "/assets/Jaguar.avif"
+      "/assets/ESKANM0005 - Dog with flower bow.png"
     ],
     "stock": 20,
     "badge": null,
     "rating": 4.8,
-    "reviews": 85,
+    "reviews": 51,
     "tags": [
-      "frames",
+      "engraved-wooden crafts",
       "premium",
       "handcrafted"
     ],
@@ -728,24 +140,110 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_29",
-    "slug": "japanese-quote-1",
-    "name": "Japanese Quotes 1",
-    "price": 800,
+    "id": "ESKANM0006",
+    "product_code": "ESKANM0006",
+    "product_name": "cat with flowers",
+    "slug": "eskanm0006",
+    "name": "cat with flowers",
+    "description": "Elevate your space with this premium Flower Dog. Handcrafted with precision and care.",
+    "price": 70,
     "compareAtPrice": null,
-    "shortDescription": "Premium handcrafted Japanese Quote - 1",
-    "description": "Elevate your space with this premium Japanese Quote - 1. Handcrafted with precision and care.",
-    "category": "Frames",
-    "type": "Wall Decor",
+    "shortDescription": "Premium handcrafted Flower Dog",
+    "category": "Engraved Wooden Crafts",
+    "type": "Art & Decor",
     "images": [
-      "/assets/Japanese Quote - 1.avif"
+      "/assets/ESKANM0006 - cat with flowers.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 34,
+    "tags": [
+      "engraved-wooden crafts",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKANM0007",
+    "product_code": "ESKANM0007",
+    "product_name": "dog with coolers",
+    "slug": "eskanm0007",
+    "name": "dog with coolers",
+    "description": "Elevate your space with this premium Coolers Dog. Handcrafted with precision and care.",
+    "price": 70,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Coolers Dog",
+    "category": "Engraved Wooden Crafts",
+    "type": "Art & Decor",
+    "images": [
+      "/assets/ESKANM0007 - dog with coolers.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 17,
+    "tags": [
+      "engraved-wooden crafts",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": true,
+    "isNewArrival": true,
+    "isBestseller": true
+  },
+  {
+    "id": "ESKANM0008",
+    "product_code": "ESKANM0008",
+    "product_name": "cat 3",
+    "slug": "eskanm0008",
+    "name": "cat 3",
+    "description": "Elevate your space with this premium main character energy. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted main character energy",
+    "category": "Engraved Wooden Crafts",
+    "type": "Art & Decor",
+    "images": [
+      "/assets/ESKANM0008 - cat 3.png"
     ],
     "stock": 20,
     "badge": "NEW",
     "rating": 4.8,
-    "reviews": 108,
+    "reviews": 51,
     "tags": [
-      "frames",
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKANM0009",
+    "product_code": "ESKANM0009",
+    "product_name": "Cat 4",
+    "slug": "eskanm0009",
+    "name": "Cat 4",
+    "description": "Elevate your space with this premium Music is my drug. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Music is my drug",
+    "category": "Engraved Wooden Crafts",
+    "type": "Art & Decor",
+    "images": [
+      "/assets/ESKANM0009 - Cat 4.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 22,
+    "tags": [
+      "dog-tag keychain",
       "premium",
       "handcrafted"
     ],
@@ -754,24 +252,26 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_30",
-    "slug": "odyssey-the-odyssey",
-    "name": "Odysseyus | The Odyssey",
-    "price": 680,
-    "compareAtPrice": 800,
-    "shortDescription": "Premium handcrafted Odyssey - The Odyssey",
-    "description": "Elevate your space with this premium Odyssey - The Odyssey. Handcrafted with precision and care.",
-    "category": "Frames",
-    "type": "Wall Decor",
+    "id": "ESKANM0010",
+    "product_code": "ESKANM0010",
+    "product_name": "cute dogs",
+    "slug": "eskanm0010",
+    "name": "cute dogs",
+    "description": "Elevate your space with this premium No risk no story. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted No risk no story",
+    "category": "Engraved Wooden Crafts",
+    "type": "Art & Decor",
     "images": [
-      "/assets/Odyssey - The Odyssey.avif"
+      "/assets/ESKANM0010 - cute dogs.png"
     ],
     "stock": 20,
-    "badge": "SALE",
+    "badge": null,
     "rating": 4.8,
-    "reviews": 20,
+    "reviews": 93,
     "tags": [
-      "frames",
+      "dog-tag keychain",
       "premium",
       "handcrafted"
     ],
@@ -780,17 +280,355 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_31",
-    "slug": "peacock",
+    "id": "ESKDTG0001",
+    "product_code": "ESKDTG0001",
+    "product_name": "ew people",
+    "slug": "eskdtg0001",
+    "name": "ew people",
+    "description": "Elevate your space with this premium original. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted original",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0001 - ew people.png"
+    ],
+    "stock": 20,
+    "badge": "NEW",
+    "rating": 4.8,
+    "reviews": 19,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": true
+  },
+  {
+    "id": "ESKDTG0002",
+    "product_code": "ESKDTG0002",
+    "product_name": "dreamcatcher",
+    "slug": "eskdtg0002",
+    "name": "dreamcatcher",
+    "description": "Elevate your space with this premium Dreamcatcher. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Dreamcatcher",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0002 - dreamcatcher.png"
+    ],
+    "stock": 20,
+    "badge": "NEW",
+    "rating": 4.8,
+    "reviews": 19,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKDTG0003",
+    "product_code": "ESKDTG0003",
+    "product_name": "can't rush greatness",
+    "slug": "eskdtg0003",
+    "name": "can't rush greatness",
+    "description": "Elevate your space with this premium Can't rush greatness. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Can't rush greatness",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0003 - can't rush greatness.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 78,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKDTG0004",
+    "product_code": "ESKDTG0004",
+    "product_name": "music is my drug",
+    "slug": "eskdtg0004",
+    "name": "music is my drug",
+    "description": "Elevate your space with this premium Music is my drug. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Music is my drug",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0004 - music is my drug.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 22,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": true,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKDTG0005",
+    "product_code": "ESKDTG0005",
+    "product_name": "dream it  , believe it , achieve it",
+    "slug": "eskdtg0005",
+    "name": "dream it  , believe it , achieve it",
+    "description": "Elevate your space with this premium Dream it ! Believe it ! Achieve it!. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Dream it ! Believe it ! Achieve it!",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0005 - dream it  , believe it , achieve it.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 25,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": true,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKDTG0006",
+    "product_code": "ESKDTG0006",
+    "product_name": "chill",
+    "slug": "eskdtg0006",
+    "name": "chill",
+    "description": "Elevate your space with this premium Chill. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Chill",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0006 - chill.png"
+    ],
+    "stock": 20,
+    "badge": "NEW",
+    "rating": 4.8,
+    "reviews": 83,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKDTG0007",
+    "product_code": "ESKDTG0007",
+    "product_name": "original",
+    "slug": "eskdtg0007",
+    "name": "original",
+    "description": "Elevate your space with this premium original. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted original",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0007 - original.png"
+    ],
+    "stock": 20,
+    "badge": "NEW",
+    "rating": 4.8,
+    "reviews": 19,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": true
+  },
+  {
+    "id": "ESKDTG0008",
+    "product_code": "ESKDTG0008",
+    "product_name": "consistency",
+    "slug": "eskdtg0008",
+    "name": "consistency",
+    "description": "Elevate your space with this premium consistency. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted consistency",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0008 - consistency.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 46,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": true
+  },
+  {
+    "id": "ESKDTG0009",
+    "product_code": "ESKDTG0009",
+    "product_name": "no risk no story",
+    "slug": "eskdtg0009",
+    "name": "no risk no story",
+    "description": "Elevate your space with this premium No risk no story. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted No risk no story",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0009 - no risk no story.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 93,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKDTG0010",
+    "product_code": "ESKDTG0010",
+    "product_name": "staying delulu is solulu",
+    "slug": "eskdtg0010",
+    "name": "staying delulu is solulu",
+    "description": "Elevate your space with this premium Staying delulu is the solulu. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Staying delulu is the solulu",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0010 - staying delulu is solulu.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 57,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKDTG0011",
+    "product_code": "ESKDTG0011",
+    "product_name": "its just a bad day not a bad life",
+    "slug": "eskdtg0011",
+    "name": "its just a bad day not a bad life",
+    "description": "Elevate your space with this premium It's just a bad day,not a bad life. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted It's just a bad day,not a bad life",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0011 - its just a bad day not a bad life.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 11,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": true
+  },
+  {
+    "id": "ESKDTG0012",
+    "product_code": "ESKDTG0012",
+    "product_name": "main character energy",
+    "slug": "eskdtg0012",
+    "name": "main character energy",
+    "description": "Elevate your space with this premium main character energy. Handcrafted with precision and care.",
+    "price": 80,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted main character energy",
+    "category": "Dog Tag Keychain",
+    "type": "Personalized",
+    "images": [
+      "/assets/ESKDTG0012 - main character energy.png"
+    ],
+    "stock": 20,
+    "badge": "NEW",
+    "rating": 4.8,
+    "reviews": 51,
+    "tags": [
+      "dog-tag keychain",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKFRM0001",
+    "product_code": "ESKFRM0001",
+    "product_name": "Peacock",
+    "slug": "eskfrm0001",
     "name": "Peacock",
+    "description": "Elevate your space with this premium Peacock. Handcrafted with precision and care.",
     "price": 800,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Peacock",
-    "description": "Elevate your space with this premium Peacock. Handcrafted with precision and care.",
     "category": "Frames",
     "type": "Wall Decor",
     "images": [
-      "/assets/Peacock.avif"
+      "/assets/ESKFRM0001 - Peacock.JPG"
     ],
     "stock": 20,
     "badge": null,
@@ -806,43 +644,47 @@
     "isBestseller": true
   },
   {
-    "id": "prod_new_32",
-    "slug": "the-odyssey-the-odyssey-01",
-    "name": "The Odyssey | The Odyssey",
-    "price": 680,
-    "compareAtPrice": 800,
-    "shortDescription": "Premium handcrafted The Odyssey - The Odyssey 01",
-    "description": "Elevate your space with this premium The Odyssey - The Odyssey 01. Handcrafted with precision and care.",
+    "id": "ESKFRM0002",
+    "product_code": "ESKFRM0002",
+    "product_name": "Lepoard",
+    "slug": "eskfrm0002",
+    "name": "Lepoard",
+    "description": "Elevate your space with this premium Rose. Handcrafted with precision and care.",
+    "price": 800,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Rose",
     "category": "Frames",
     "type": "Wall Decor",
     "images": [
-      "/assets/The Odyssey - The Odyssey 01.avif"
+      "/assets/ESKFRM0002 - Lepoard.JPG"
     ],
     "stock": 20,
-    "badge": "SALE",
+    "badge": null,
     "rating": 4.8,
-    "reviews": 24,
+    "reviews": 69,
     "tags": [
-      "frames",
+      "engraved-wooden crafts",
       "premium",
       "handcrafted"
     ],
-    "isFeatured": false,
+    "isFeatured": true,
     "isNewArrival": true,
     "isBestseller": false
   },
   {
-    "id": "prod_new_33",
-    "slug": "zen-temple-frame-2",
-    "name": "Zen Temple Frame 2",
+    "id": "ESKFRM0003",
+    "product_code": "ESKFRM0003",
+    "product_name": "Zen Temple 01",
+    "slug": "eskfrm0003",
+    "name": "Zen Temple 01",
+    "description": "Elevate your space with this premium Zen Temple Frame 2. Handcrafted with precision and care.",
     "price": 800,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Zen Temple Frame 2",
-    "description": "Elevate your space with this premium Zen Temple Frame 2. Handcrafted with precision and care.",
     "category": "Frames",
     "type": "Wall Decor",
     "images": [
-      "/assets/Zen Temple Frame 2.avif"
+      "/assets/ESKFRM0003 - Zen Temple.JPG"
     ],
     "stock": 20,
     "badge": null,
@@ -858,17 +700,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_34",
-    "slug": "zen-temple-frame",
-    "name": "Zen Temple Frame",
+    "id": "ESKFRM0004",
+    "product_code": "ESKFRM0004",
+    "product_name": "Zen Temple 02",
+    "slug": "eskfrm0004",
+    "name": "Zen Temple 02",
+    "description": "Elevate your space with this premium Zen Temple Frame. Handcrafted with precision and care.",
     "price": 800,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Zen Temple Frame",
-    "description": "Elevate your space with this premium Zen Temple Frame. Handcrafted with precision and care.",
     "category": "Frames",
     "type": "Wall Decor",
     "images": [
-      "/assets/Zen Temple Frame.avif"
+      "/assets/ESKFRM0004 - Zen Temple.JPG"
     ],
     "stock": 20,
     "badge": null,
@@ -884,17 +728,227 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_35",
-    "slug": "2000-year-engraved",
-    "name": "2000 Year Engraved",
+    "id": "ESKFRM0005",
+    "product_code": "ESKFRM0005",
+    "product_name": "Japanese Quotes",
+    "slug": "eskfrm0005",
+    "name": "Japanese Quotes",
+    "description": "Elevate your space with this premium Japanese Quote - 1. Handcrafted with precision and care.",
+    "price": 800,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Japanese Quote - 1",
+    "category": "Frames",
+    "type": "Wall Decor",
+    "images": [
+      "/assets/ESKFRM0005 - Japanese Quotes.JPG"
+    ],
+    "stock": 20,
+    "badge": "NEW",
+    "rating": 4.8,
+    "reviews": 108,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": true,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKPSD0001",
+    "product_code": "ESKPSD0001",
+    "product_name": "Demon Slayer",
+    "slug": "eskpsd0001",
+    "name": "Demon Slayer",
+    "description": "Elevate your space with this premium Jaguar. Handcrafted with precision and care.",
+    "price": 200,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Jaguar",
+    "category": "Anime Phone Stand",
+    "type": "Desk Accessory",
+    "images": [
+      "/assets/ESKPSD0001 - Demon Slayer -1.png",
+      "/assets/ESKPSD0001 - S - Demon Slayer.png",
+      "/assets/Sample Stand.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 85,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKPSD0002",
+    "product_code": "ESKPSD0002",
+    "product_name": "One Piece",
+    "slug": "eskpsd0002",
+    "name": "One Piece",
+    "description": "Elevate your space with this premium Japanese Quote - 1. Handcrafted with precision and care.",
+    "price": 200,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Japanese Quote - 1",
+    "category": "Anime Phone Stand",
+    "type": "Desk Accessory",
+    "images": [
+      "/assets/ESKPSD0002- One Piece - 1.png",
+      "/assets/ESKPSD0002 - S - One Piece - 1.png",
+      "/assets/Sample Stand.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 108,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": true,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKPSD0003",
+    "product_code": "ESKPSD0003",
+    "product_name": "Demon Slayer",
+    "slug": "eskpsd0003",
+    "name": "Demon Slayer",
+    "description": "Elevate your space with this premium Odyssey - The Odyssey. Handcrafted with precision and care.",
+    "price": 200,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Odyssey - The Odyssey",
+    "category": "Anime Phone Stand",
+    "type": "Desk Accessory",
+    "images": [
+      "/assets/ESKPSD0003 - Demon Slayer - 2.png",
+      "/assets/ESKPSD0003 - S - Demon Slayer.png",
+      "/assets/Sample Stand.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 20,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKPSD0004",
+    "product_code": "ESKPSD0004",
+    "product_name": "Jujustu Kaisen",
+    "slug": "eskpsd0004",
+    "name": "Jujustu Kaisen",
+    "description": "Elevate your space with this premium Peacock. Handcrafted with precision and care.",
+    "price": 200,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Peacock",
+    "category": "Anime Phone Stand",
+    "type": "Desk Accessory",
+    "images": [
+      "/assets/ESKPSD0004 - Jujustu Kaisen.png",
+      "/assets/ESKPSD0004 - S - Jujustu Kaisen.png",
+      "/assets/Sample Stand.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 11,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": true
+  },
+  {
+    "id": "ESKPSD0005",
+    "product_code": "ESKPSD0005",
+    "product_name": "One Piece",
+    "slug": "eskpsd0005",
+    "name": "One Piece",
+    "description": "Elevate your space with this premium The Odyssey - The Odyssey 01. Handcrafted with precision and care.",
+    "price": 200,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted The Odyssey - The Odyssey 01",
+    "category": "Anime Phone Stand",
+    "type": "Desk Accessory",
+    "images": [
+      "/assets/ESKPSD0005 - One Piece - 2.png",
+      "/assets/ESKPSD0005 - S - One Piece - 2.png",
+      "/assets/Sample Stand.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 24,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKPSD0006",
+    "product_code": "ESKPSD0006",
+    "product_name": "Jujustu Kaisen",
+    "slug": "eskpsd0006",
+    "name": "Jujustu Kaisen",
+    "description": "Elevate your space with this premium Zen Temple Frame 2. Handcrafted with precision and care.",
+    "price": 200,
+    "compareAtPrice": null,
+    "shortDescription": "Premium handcrafted Zen Temple Frame 2",
+    "category": "Anime Phone Stand",
+    "type": "Desk Accessory",
+    "images": [
+      "/assets/ESKPSD0006 - Jujustu Kaisen.png",
+      "/assets/ESKPSD0006 - S - Jujustu Kaisen.png",
+      "/assets/Sample Stand.png"
+    ],
+    "stock": 20,
+    "badge": null,
+    "rating": 4.8,
+    "reviews": 81,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKYTG0001",
+    "product_code": "ESKYTG0001",
+    "product_name": "2000 Year Tag",
+    "slug": "eskytg0001",
+    "name": "2000 Year Tag",
+    "description": "Elevate your space with this premium 2000 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2000 Year Engraved",
-    "description": "Elevate your space with this premium 2000 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2000 Year Engraved.avif"
+      "/assets/ESKYTG0001 - 2000 Year Tag.png"
     ],
     "stock": 20,
     "badge": "NEW",
@@ -910,17 +964,19 @@
     "isBestseller": true
   },
   {
-    "id": "prod_new_36",
-    "slug": "2001-year-engraved",
-    "name": "2001 Year Engraved",
+    "id": "ESKYTG0002",
+    "product_code": "ESKYTG0002",
+    "product_name": "2001 Year Tag",
+    "slug": "eskytg0002",
+    "name": "2001 Year Tag",
+    "description": "Elevate your space with this premium 2001 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2001 Year Engraved",
-    "description": "Elevate your space with this premium 2001 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2001 Year Engraved.avif"
+      "/assets/ESKYTG0002 - 2001 Year Tag.png"
     ],
     "stock": 20,
     "badge": null,
@@ -936,17 +992,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_37",
-    "slug": "2002-year-engraved",
-    "name": "2002 Year Engraved",
+    "id": "ESKYTG0003",
+    "product_code": "ESKYTG0003",
+    "product_name": "2002 Year Tag",
+    "slug": "eskytg0003",
+    "name": "2002 Year Tag",
+    "description": "Elevate your space with this premium 2002 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2002 Year Engraved",
-    "description": "Elevate your space with this premium 2002 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2002 Year Engraved.avif"
+      "/assets/ESKYTG0003 - 2002 Year Tag.png"
     ],
     "stock": 20,
     "badge": null,
@@ -962,17 +1020,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_38",
-    "slug": "2003-year-engraved",
-    "name": "2003 Year Engraved",
+    "id": "ESKYTG0004",
+    "product_code": "ESKYTG0004",
+    "product_name": "2003 Year Tag",
+    "slug": "eskytg0004",
+    "name": "2003 Year Tag",
+    "description": "Elevate your space with this premium 2003 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2003 Year Engraved",
-    "description": "Elevate your space with this premium 2003 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2003 Year Engraved.avif"
+      "/assets/ESKYTG0004 - 2003 Year Tag.png"
     ],
     "stock": 20,
     "badge": "NEW",
@@ -988,17 +1048,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_39",
-    "slug": "2004-year-engraved",
-    "name": "2004 Year Engraved",
+    "id": "ESKYTG0005",
+    "product_code": "ESKYTG0005",
+    "product_name": "2004 Year Tag",
+    "slug": "eskytg0005",
+    "name": "2004 Year Tag",
+    "description": "Elevate your space with this premium 2004 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2004 Year Engraved",
-    "description": "Elevate your space with this premium 2004 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2004 Year Engraved.avif"
+      "/assets/ESKYTG0005 - 2004 Year Tag.png"
     ],
     "stock": 20,
     "badge": null,
@@ -1014,17 +1076,19 @@
     "isBestseller": true
   },
   {
-    "id": "prod_new_40",
-    "slug": "2005-year-engraved",
-    "name": "2005 Year Engraved",
+    "id": "ESKYTG0006",
+    "product_code": "ESKYTG0006",
+    "product_name": "2005 Year Tag",
+    "slug": "eskytg0006",
+    "name": "2005 Year Tag",
+    "description": "Elevate your space with this premium 2005 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2005 Year Engraved",
-    "description": "Elevate your space with this premium 2005 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2005 Year Engraved.avif"
+      "/assets/ESKYTG0006 - 2005 Year Tag.png"
     ],
     "stock": 20,
     "badge": null,
@@ -1040,17 +1104,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_41",
-    "slug": "2006-year-engraved",
-    "name": "2006 Year Engraved",
+    "id": "ESKYTG0007",
+    "product_code": "ESKYTG0007",
+    "product_name": "2006 Year Tag",
+    "slug": "eskytg0007",
+    "name": "2006 Year Tag",
+    "description": "Elevate your space with this premium 2006 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2006 Year Engraved",
-    "description": "Elevate your space with this premium 2006 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2006 Year Engraved.avif"
+      "/assets/ESKYTG0007 - 2006 Year Tag.png"
     ],
     "stock": 20,
     "badge": "NEW",
@@ -1066,17 +1132,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_42",
-    "slug": "2007-year-engraved",
-    "name": "2007 Year Engraved",
+    "id": "ESKYTG0008",
+    "product_code": "ESKYTG0008",
+    "product_name": "2007 Year Tag",
+    "slug": "eskytg0008",
+    "name": "2007 Year Tag",
+    "description": "Elevate your space with this premium 2007 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2007 Year Engraved",
-    "description": "Elevate your space with this premium 2007 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2007 Year Engraved.avif"
+      "/assets/ESKYTG0008 - 2007 Year Tag.png"
     ],
     "stock": 20,
     "badge": null,
@@ -1092,17 +1160,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_43",
-    "slug": "2008-year-engraved",
-    "name": "2008 Year Engraved",
+    "id": "ESKYTG0009",
+    "product_code": "ESKYTG0009",
+    "product_name": "2008 Year Tag",
+    "slug": "eskytg0009",
+    "name": "2008 Year Tag",
+    "description": "Elevate your space with this premium 2008 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2008 Year Engraved",
-    "description": "Elevate your space with this premium 2008 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2008 Year Engraved.avif"
+      "/assets/ESKYTG0009 - 2008 Year Tag.png"
     ],
     "stock": 20,
     "badge": null,
@@ -1118,17 +1188,19 @@
     "isBestseller": true
   },
   {
-    "id": "prod_new_44",
-    "slug": "2009-year-engraved",
-    "name": "2009 Year Engraved",
+    "id": "ESKYTG0010",
+    "product_code": "ESKYTG0010",
+    "product_name": "2009 Year Tag",
+    "slug": "eskytg0010",
+    "name": "2009 Year Tag",
+    "description": "Elevate your space with this premium 2009 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2009 Year Engraved",
-    "description": "Elevate your space with this premium 2009 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2009 Year Engraved.avif"
+      "/assets/ESKYTG0010 - 2009 Year Tag.png"
     ],
     "stock": 20,
     "badge": "NEW",
@@ -1144,17 +1216,19 @@
     "isBestseller": false
   },
   {
-    "id": "prod_new_45",
-    "slug": "2010-year-engraved",
-    "name": "2010 Year Engraved",
+    "id": "ESKYTG0011",
+    "product_code": "ESKYTG0011",
+    "product_name": "2010 Year Tag",
+    "slug": "eskytg0011",
+    "name": "2010 Year Tag",
+    "description": "Elevate your space with this premium 2010 Year Engraved. Handcrafted with precision and care.",
     "price": 60,
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted 2010 Year Engraved",
-    "description": "Elevate your space with this premium 2010 Year Engraved. Handcrafted with precision and care.",
     "category": "Engraved Dates",
     "type": "Keepsake",
     "images": [
-      "/assets/2010 Year Engraved.avif"
+      "/assets/ESKYTG0011 - 2010 Year Tag.png"
     ],
     "stock": 20,
     "badge": null,
@@ -1162,6 +1236,90 @@
     "reviews": 70,
     "tags": [
       "engraved-dates",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKFRM0006",
+    "product_code": "ESKFRM0006",
+    "product_name": "Odessey",
+    "slug": "eskfrm0006",
+    "name": "Odessey",
+    "description": "Premium handcrafted Odessey. Handcrafted with precision and care.",
+    "price": 680,
+    "compareAtPrice": 800,
+    "shortDescription": "Premium handcrafted Odessey",
+    "category": "Frames",
+    "type": "Wall Decor",
+    "images": [
+      "/assets/ESKFRM0006 - Odessey.png"
+    ],
+    "stock": 20,
+    "badge": "SALE",
+    "rating": 4.8,
+    "reviews": 50,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKFRM0007",
+    "product_code": "ESKFRM0007",
+    "product_name": "Archilles",
+    "slug": "eskfrm0007",
+    "name": "Archilles",
+    "description": "Premium handcrafted Archilles. Handcrafted with precision and care.",
+    "price": 680,
+    "compareAtPrice": 800,
+    "shortDescription": "Premium handcrafted Archilles",
+    "category": "Frames",
+    "type": "Wall Decor",
+    "images": [
+      "/assets/ESKFRM0007 - Archilles.png"
+    ],
+    "stock": 20,
+    "badge": "SALE",
+    "rating": 4.8,
+    "reviews": 50,
+    "tags": [
+      "frames",
+      "premium",
+      "handcrafted"
+    ],
+    "isFeatured": false,
+    "isNewArrival": true,
+    "isBestseller": false
+  },
+  {
+    "id": "ESKFRM0008",
+    "product_code": "ESKFRM0008",
+    "product_name": "Odessey 02",
+    "slug": "eskfrm0008",
+    "name": "Odessey 02",
+    "description": "Premium handcrafted Odessey 02. Handcrafted with precision and care.",
+    "price": 680,
+    "compareAtPrice": 800,
+    "shortDescription": "Premium handcrafted Odessey 02",
+    "category": "Frames",
+    "type": "Wall Decor",
+    "images": [
+      "/assets/ESKFRM0008 - Odessey 02.png"
+    ],
+    "stock": 20,
+    "badge": "SALE",
+    "rating": 4.8,
+    "reviews": 50,
+    "tags": [
+      "frames",
       "premium",
       "handcrafted"
     ],

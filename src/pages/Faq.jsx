@@ -5,7 +5,11 @@ import { ChevronDown } from 'lucide-react';
 const faqs = [
   {
     q: 'What materials do you use?',
-    a: 'All our products are crafted from premium birch and MDF wood, laser-cut and hand-finished. Every piece is inspected before it ships.',
+    a: 'All our products are crafted from Teak wood, laser-cut and hand-finished. Every piece is inspected before it ships.',
+  },
+  {
+    q: 'Do you use Teak Wood?',
+    a: 'Yes, all our products are made from Teak wood. Each piece is laser-cut and hand-finished with care.',
   },
   {
     q: 'Do you take custom orders?',

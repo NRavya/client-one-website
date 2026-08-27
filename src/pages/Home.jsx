@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, ShieldCheck, Truck, Package, RotateCcw, Leaf, PenTool, Frame, Smartphone, PawPrint, CalendarHeart } from 'lucide-react';
+import { ArrowRight, Star, ShieldCheck, Truck, Package, RotateCcw, PenTool, Frame, Smartphone, CalendarHeart, Tag } from 'lucide-react';
 import { InstagramIcon } from '../components/icons';
 import productsData from '../data/products.json';
 import ProductCard from '../components/ProductCard';
@@ -9,7 +9,7 @@ const categories = [
   { title: 'FRAMES', slug: 'frames', desc: 'Handcrafted wooden frames for your walls.', icon: <Frame size={32} /> },
   { title: 'ANIME PHONE STANDS', slug: 'anime-phone-stands', desc: 'Engraved stands for your favorite series.', icon: <Smartphone size={32} /> },
   { title: 'ENGRAVED WOODEN CRAFTS', slug: 'engraved-crafts', desc: 'Mandala panels, name plates and more.', icon: <PenTool size={32} /> },
-  { title: 'DOG TAG KEYCHAINS', slug: 'dog-tag-keychains', desc: 'Personalized tags, etched to last.', icon: <PawPrint size={32} /> },
+  { title: 'DOG TAG KEYCHAINS', slug: 'dog-tag-keychains', desc: 'Personalized tags, etched to last.', icon: <Tag size={32} /> },
   { title: 'ENGRAVED DATES', slug: 'engraved-dates', desc: 'The days that matter, carved in wood.', icon: <CalendarHeart size={32} /> },
 
 ];
@@ -17,7 +17,6 @@ const categories = [
 const features = [
   { title: 'HANDCRAFTED', desc: 'Designed and crafted with attention to detail.', icon: <PenTool size={40} /> },
   { title: 'PRECISION CUT', desc: 'Laser-cut and engraved for clean details.', icon: <Package size={40} /> },
-  { title: 'SUSTAINABLY SOURCED', desc: 'Responsibly harvested wood, zero waste mindset.', icon: <Leaf size={40} /> },
   { title: 'MADE FOR GIFTING', desc: 'Small things that become memorable.', icon: <Star size={40} /> },
 ];
 
@@ -71,7 +70,6 @@ const Home = () => {
       <div style={{ backgroundColor: '#111111', color: '#FFFFFF', padding: '1rem 0' }}>
         <div className="container flex flex-wrap justify-center md:justify-between items-center gap-sm text-xs md:text-sm font-bold" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           <span className="flex items-center gap-xs"><ShieldCheck size={18} /> Premium Quality</span>
-          <span className="flex items-center gap-xs"><Leaf size={18} /> Sustainably Sourced</span>
           <span className="flex items-center gap-xs"><PenTool size={18} /> Handcrafted</span>
         </div>
       </div>
@@ -122,24 +120,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Category Banner */}
-      <section className="section" style={{ backgroundColor: '#0A0A0A', color: '#FFFFFF', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="container grid md:grid-cols-2 gap-lg items-center">
-          <div>
-            <span className="text-xs font-bold" style={{ letterSpacing: '0.15em', color: '#999999' }}>LIMITED RUN</span>
-            <h2 className="font-black mb-2 mt-2" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', lineHeight: 1.1 }}>THE WALNUT COLLECTION</h2>
-            <p className="mb-8" style={{ color: 'rgba(255,255,255,0.75)', textTransform: 'none', fontWeight: 400 }}>
-              Rich, deep tones from our premium walnut line. Warmth and elegance for any room.
-            </p>
-            <Link to="/category/the-odyssey" className="btn" style={{ backgroundColor: '#FFFFFF', color: '#0A0A0A', borderColor: '#FFFFFF' }}>
-              EXPLORE COLLECTION
-            </Link>
-          </div>
-          <div className="img-hover-zoom" style={{ borderRadius: '16px', overflow: 'hidden', aspectRatio: '4/3' }}>
-            <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=900" alt="Walnut Collection" loading="lazy" />
-          </div>
-        </div>
-      </section>
+      
 
       {/* Why Eskraft */}
       <section className="section container">
@@ -164,24 +145,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Instagram Feed */}
-      <section className="section container">
-        <div className="flex items-center justify-center gap-sm mb-8">
-          <InstagramIcon size={30} />
-          <h2 className="section-title">@ESKRAFT.IN</h2>
-        </div>
-        <p className="text-center text-gray mb-8" style={{ textTransform: 'none', fontWeight: 400, marginTop: '-1.5rem' }}>
-          Tag us in your setup shots — we repost our favorites every week.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-sm">
-          {instagramPosts.map((src, idx) => (
-            <a key={src} href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label={`Instagram post ${idx + 1}`} className="insta-tile img-hover-zoom">
-              <img src={src} alt={`ESKRAFT on Instagram, post ${idx + 1}`} loading="lazy" />
-              <span className="insta-overlay flex items-center justify-center"><InstagramIcon size={24} /></span>
-            </a>
-          ))}
-        </div>
-      </section>
+
     </div>
   );
 };

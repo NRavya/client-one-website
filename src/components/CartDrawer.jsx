@@ -42,15 +42,7 @@ const CartDrawer = () => {
           </button>
         </div>
 
-        {/* Shipping progress */}
-        <div style={{ padding: '1rem 1.5rem', backgroundColor: 'rgba(0,0,0,0.03)', borderBottom: '1px solid var(--color-border)' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, textAlign: 'center', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            {amountLeft > 0 ? `Add ₹${amountLeft} more for FREE shipping` : '🎉 You unlocked FREE shipping!'}
-          </p>
-          <div style={{ height: '6px', backgroundColor: 'var(--color-border)', borderRadius: '3px', overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--color-wood-dark)', borderRadius: '3px', transition: 'width 0.4s ease' }} />
-          </div>
-        </div>
+
 
         {/* Items */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>

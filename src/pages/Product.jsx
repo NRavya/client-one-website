@@ -93,10 +93,10 @@ const Product = () => {
 
           {/* Details */}
           <div className="flex flex-col gap-md" style={{ position: 'sticky', top: '120px' }}>
-            <p className="text-sm font-bold" style={{ letterSpacing: '0.1em', color: 'var(--color-wood-mid)' }}>
+            <p className="text-sm font-bold" style={{ letterSpacing: '0.1em', color: 'var(--color-text)' }}>
               {product.category.toUpperCase()} · {product.type.toUpperCase()}
             </p>
-            <h1 className="text-4xl font-black">{product.name}</h1>
+            <h1 className="text-4xl font-black">{product.product_name || product.name}</h1>
             <div className="flex items-center gap-sm">
               <span className="text-3xl font-black">₹{product.price}</span>
               {product.compareAtPrice && (
@@ -106,8 +106,6 @@ const Product = () => {
                 </>
               )}
             </div>
-            <p className="text-base text-gray" style={{ textTransform: 'none', fontWeight: 400 }}>{product.shortDescription}</p>
-
             <div className="flex items-center gap-sm">
               <label htmlFor="qty" className="font-bold text-sm">QUANTITY</label>
               <div className="flex items-center" style={{ border: '1px solid var(--color-border)', borderRadius: '8px' }}>
@@ -115,7 +113,7 @@ const Product = () => {
                 <input id="qty" value={quantity} readOnly aria-label="Quantity" style={{ width: '48px', textAlign: 'center', fontWeight: 700 }} />
                 <button type="button" onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))} aria-label="Increase quantity" style={{ padding: '0.6rem 1rem' }}>+</button>
               </div>
-              <span className="text-sm text-gray">{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</span>
+              <span className="text-sm" style={{color:'var(--color-text)'}}>{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</span>
             </div>
 
             <button
@@ -128,21 +126,13 @@ const Product = () => {
               {added ? (<><Check size={20} /> ADDED TO CART</>) : product.stock === 0 ? 'SOLD OUT' : 'ADD TO CART'}
             </button>
 
-            <div className="flex flex-col gap-xs text-sm text-gray">
+            <div className="flex flex-col gap-xs text-sm" style={{color:'var(--color-text)'}}>
               <span className="flex items-center gap-xs"><Truck size={16} /> Free shipping above ₹500</span>
               <span className="flex items-center gap-xs"><ShieldCheck size={16} /> Verified COD available</span>
               <span className="flex items-center gap-xs"><RotateCcw size={16} /> Easy 7-day returns</span>
             </div>
 
-            <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '2rem' }}>
-              <h3 className="text-xl font-bold mb-2">About this piece</h3>
-              <p className="text-base" style={{ textTransform: 'none', fontWeight: 400 }}>{product.description}</p>
-              <div className="flex flex-wrap gap-xs" style={{ marginTop: '1rem' }}>
-                {product.tags.map((tag) => (
-                  <span key={tag} className="badge" style={{ backgroundColor: '#F5F3ED', color: 'var(--color-wood-dark)' }}>{tag}</span>
-                ))}
-              </div>
-            </div>
+
           </div>
         </div>
       </div>

@@ -102,7 +102,7 @@ export default function Admin() {
               <td style={{padding:8,fontWeight:700}}>{o.orderNumber}</td>
               <td>{new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
               <td>{o.customer?.name}<br/><span className="text-xs text-gray">{o.customer?.email} {o.customer?.phone}</span></td>
-              <td>{o.items?.map(i=>`${i.product?.name||i.productId} ×${i.quantity} (₹${i.unitPrice})`).join(', ')}</td>
+              <td>{o.items?.map(i=>`${i.product_code||i.product?.product_code||''} | ${i.product_name||i.product?.product_name||i.product?.name} ×${i.quantity} (₹${i.unitPrice})`).join(', ')}</td>
               <td>₹{o.total} <span className="text-xs"> (ship ₹{o.shippingFee})</span></td>
               <td><span style={{padding:'2px 8px',borderRadius:12,background:'#eee',fontSize:'0.75rem'}}>{o.status}</span></td>
               <td>

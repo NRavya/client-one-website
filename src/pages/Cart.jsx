@@ -1,9 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Minus, Plus, Trash2, Truck, ShoppingBag } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/useCart';
-
-const FREE_SHIPPING_THRESHOLD = 500;
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, subtotal, totalCount } = useCart();
@@ -20,6 +18,8 @@ const Cart = () => {
     } catch(e){ setCheckoutMsg(e.message||'Checkout failed'); }
   };
 
+  const shipping = subtotal >= 500 ? 0 : 60;
+
   if (items.length === 0) {
     return (
       <div className="container section text-center flex flex-col items-center gap-md">
@@ -32,9 +32,6 @@ const Cart = () => {
       </div>
     );
   }
-
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 60;
-  const progress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
 
   return (
     <div className="container section">
@@ -50,7 +47,7 @@ const Cart = () => {
               </Link>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <Link to={`/product/${item.slug}`}>
-                  <h3 className="font-bold" style={{ textTransform: 'none' }}>{item.name}</h3>
+                  <h3 className="font-bold" style={{ textTransform: 'none' }}>{item.product_name || item.name}</h3>
                 </Link>
                 <span className="text-lg font-black">₹{item.price}</span>
               </div>
@@ -83,18 +80,6 @@ const Cart = () => {
         {/* Summary */}
         <aside className="flex flex-col gap-md" style={{ border: '1px solid var(--color-border)', borderRadius: '16px', padding: '2rem', position: 'sticky', top: '120px' }}>
           <h2 className="text-xl font-black">ORDER SUMMARY</h2>
-
-          <div>
-            <div className="flex items-center gap-xs text-sm font-bold" style={{ marginBottom: '0.5rem', color: shipping === 0 ? 'var(--color-wood-dark)' : 'var(--color-text)' }}>
-              <Truck size={16} />
-              {shipping === 0
-                ? 'You unlocked FREE shipping!'
-                : `Add ₹${FREE_SHIPPING_THRESHOLD - subtotal} more for free shipping`}
-            </div>
-            <div style={{ height: '6px', backgroundColor: '#eee', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ width: `${progress}%`, height: '100%', backgroundColor: 'var(--color-wood-mid)', transition: 'width var(--transition-smooth)' }} />
-            </div>
-          </div>
 
           <div className="flex flex-col gap-xs text-sm">
             <div className="flex justify-between">

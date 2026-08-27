@@ -9,7 +9,7 @@ const badgeClass = (badge) => {
   return '';
 };
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, showCode = false }) => {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
 
@@ -39,7 +39,7 @@ const ProductCard = ({ product }) => {
         )}
       </div>
       <div className="flex flex-col gap-xs">
-        <h3 className="text-base font-bold">{product.name}</h3>
+        <h3 className="text-base font-bold">{showCode && product.product_code ? `${product.product_code} | ${product.product_name || product.name}` : (product.product_name || product.name)}</h3>
         <div className="flex items-center gap-sm">
           <span className="text-lg font-black">₹{product.price}</span>
           {product.compareAtPrice && <span className="text-sm text-gray" style={{ textDecoration: 'line-through' }}>₹{product.compareAtPrice}</span>}

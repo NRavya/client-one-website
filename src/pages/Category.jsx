@@ -11,14 +11,11 @@ const categoryMap = {
   'engraved-crafts': { title: 'ENGRAVED WOODEN CRAFTS', filter: (p) => p.category === 'Engraved Wooden Crafts' },
   'dog-tag-keychains': { title: 'DOG TAG KEYCHAINS', filter: (p) => p.category === 'Dog Tag Keychain' },
   'engraved-dates': { title: 'ENGRAVED DATES', filter: (p) => p.category === 'Engraved Dates' },
-  'customized-keychains': { title: 'CUSTOMIZED KEYCHAINS', filter: (p) => p.category === 'Customized Keychains' },
-  'small-but-cool': { title: 'SMALL BUT COOL', filter: (p) => p.category === 'Small but Cool' },
   'new-drops': { title: 'NEW DROPS', filter: (p) => p.isNewArrival },
   'bestsellers': { title: 'BESTSELLERS', filter: (p) => p.isBestseller },
   /* legacy aliases */
   'the-odyssey': { title: 'FRAMES', filter: (p) => p.category === 'Frames' },
   'anime-corner': { title: 'ANIME PHONE STANDS', filter: (p) => p.category === 'Anime Phone Stand' },
-  'personalize-it': { title: 'CUSTOMIZED KEYCHAINS', filter: (p) => p.category === 'Customized Keychains' },
 };
 
 const filters = [
@@ -29,8 +26,6 @@ const filters = [
   { label: 'Engraved Crafts', slug: 'engraved-crafts' },
   { label: 'Dog Tags', slug: 'dog-tag-keychains' },
   { label: 'Engraved Dates', slug: 'engraved-dates' },
-  { label: 'Custom Keychains', slug: 'customized-keychains' },
-  { label: 'Small but Cool', slug: 'small-but-cool' },
 ];
 
 const Category = () => {
@@ -69,7 +64,7 @@ const Category = () => {
       {items.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
           {items.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} showCode />
           ))}
         </div>
       ) : (

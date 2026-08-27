@@ -28,7 +28,7 @@ const createOrder = async (req, res) => {
         }
         const itemSubtotal = product.price * item.quantity;
         subtotal += itemSubtotal;
-        orderItemsData.push({ productId: product.id, quantity: item.quantity, unitPrice: product.price, subtotal: itemSubtotal });
+        orderItemsData.push({ productId: product.id, product_code: product.product_code, product_name: product.product_name, quantity: item.quantity, unitPrice: product.price, subtotal: itemSubtotal });
       }
       const shippingFee = subtotal >= 500 ? 0 : 60;
       const total = subtotal + shippingFee;
