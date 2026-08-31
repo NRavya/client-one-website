@@ -39,7 +39,14 @@ const ProductCard = ({ product, showCode = false }) => {
         )}
       </div>
       <div className="flex flex-col gap-xs">
-        <h3 className="text-base font-bold">{showCode && product.product_code ? `${product.product_code} | ${product.product_name || product.name}` : (product.product_name || product.name)}</h3>
+        {showCode && product.product_code ? (
+          <>
+            <span style={{ fontSize: '0.7rem', letterSpacing: '0.08em', color: 'var(--color-gray)', fontWeight: 600 }}>{product.product_code}</span>
+            <h3 className="font-bold" style={{ fontSize: '1.05rem', lineHeight: 1.2 }}>{product.product_name || product.name}</h3>
+          </>
+        ) : (
+          <h3 className="font-bold" style={{ fontSize: '1.05rem', lineHeight: 1.2 }}>{product.product_name || product.name}</h3>
+        )}
         <div className="flex items-center gap-sm">
           <span className="text-lg font-black">₹{product.price}</span>
           {product.compareAtPrice && <span className="text-sm text-gray" style={{ textDecoration: 'line-through' }}>₹{product.compareAtPrice}</span>}

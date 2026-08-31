@@ -175,7 +175,11 @@ const Header = () => {
         .header-left {
           display: flex;
           align-items: center;
-          gap: 0;
+          gap: 0.5rem;
+        }
+        .hamburger {
+          margin-left: 4px;
+          margin-right: 8px;
         }
 
         /* ── Wordmark ── */
@@ -386,8 +390,9 @@ const Header = () => {
         @media (max-width: 768px) {
           .desktop-nav   { display: none !important; }
           .desktop-account { display: none !important; }
-          .header-inner  { height: 64px; }
+          .header-inner  { height: 64px; padding-left: 8px; padding-right: 8px; }
           .wordmark      { font-size: clamp(1.2rem, 5vw, 1.6rem); }
+          .hamburger { margin-left: 8px; margin-right: 12px; width: 48px; height: 48px; }
         }
 
         @media (min-width: 769px) {

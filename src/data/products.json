@@ -646,9 +646,9 @@
   {
     "id": "ESKFRM0002",
     "product_code": "ESKFRM0002",
-    "product_name": "Lepoard",
+    "product_name": "Leopard",
     "slug": "eskfrm0002",
-    "name": "Lepoard",
+    "name": "Leopard",
     "description": "Elevate your space with this premium Rose. Handcrafted with precision and care.",
     "price": 800,
     "compareAtPrice": null,
@@ -656,7 +656,7 @@
     "category": "Frames",
     "type": "Wall Decor",
     "images": [
-      "/assets/ESKFRM0002 - Lepoard.JPG"
+      "/assets/ESKFRM0002 - Leopard.JPG"
     ],
     "stock": 20,
     "badge": null,
@@ -848,9 +848,9 @@
   {
     "id": "ESKPSD0004",
     "product_code": "ESKPSD0004",
-    "product_name": "Jujustu Kaisen",
+    "product_name": "Jujutsu Kaisen",
     "slug": "eskpsd0004",
-    "name": "Jujustu Kaisen",
+    "name": "Jujutsu Kaisen",
     "description": "Elevate your space with this premium Peacock. Handcrafted with precision and care.",
     "price": 200,
     "compareAtPrice": null,
@@ -858,8 +858,8 @@
     "category": "Anime Phone Stand",
     "type": "Desk Accessory",
     "images": [
-      "/assets/ESKPSD0004 - Jujustu Kaisen.png",
-      "/assets/ESKPSD0004 - S - Jujustu Kaisen.png",
+      "/assets/ESKPSD0004 - Jujutsu Kaisen.png",
+      "/assets/ESKPSD0004 - S - Jujutsu Kaisen.png",
       "/assets/Sample Stand.png"
     ],
     "stock": 20,
@@ -908,9 +908,9 @@
   {
     "id": "ESKPSD0006",
     "product_code": "ESKPSD0006",
-    "product_name": "Jujustu Kaisen",
+    "product_name": "Jujutsu Kaisen",
     "slug": "eskpsd0006",
-    "name": "Jujustu Kaisen",
+    "name": "Jujutsu Kaisen",
     "description": "Elevate your space with this premium Zen Temple Frame 2. Handcrafted with precision and care.",
     "price": 200,
     "compareAtPrice": null,
@@ -918,8 +918,8 @@
     "category": "Anime Phone Stand",
     "type": "Desk Accessory",
     "images": [
-      "/assets/ESKPSD0006 - Jujustu Kaisen.png",
-      "/assets/ESKPSD0006 - S - Jujustu Kaisen.png",
+      "/assets/ESKPSD0006 - Jujutsu Kaisen.png",
+      "/assets/ESKPSD0006 - S - Jujutsu Kaisen.png",
       "/assets/Sample Stand.png"
     ],
     "stock": 20,
@@ -1246,17 +1246,17 @@
   {
     "id": "ESKFRM0006",
     "product_code": "ESKFRM0006",
-    "product_name": "Odessey",
+    "product_name": "Odyssey",
     "slug": "eskfrm0006",
-    "name": "Odessey",
-    "description": "Premium handcrafted Odessey. Handcrafted with precision and care.",
+    "name": "Odyssey",
+    "description": "Premium handcrafted Odyssey. Handcrafted with precision and care.",
     "price": 680,
     "compareAtPrice": 800,
-    "shortDescription": "Premium handcrafted Odessey",
+    "shortDescription": "Premium handcrafted Odyssey",
     "category": "Frames",
     "type": "Wall Decor",
     "images": [
-      "/assets/ESKFRM0006 - Odessey.png"
+      "/assets/ESKFRM0006 - Odyssey.png"
     ],
     "stock": 20,
     "badge": "SALE",
@@ -1274,17 +1274,17 @@
   {
     "id": "ESKFRM0007",
     "product_code": "ESKFRM0007",
-    "product_name": "Archilles",
+    "product_name": "Achilles",
     "slug": "eskfrm0007",
-    "name": "Archilles",
-    "description": "Premium handcrafted Archilles. Handcrafted with precision and care.",
+    "name": "Achilles",
+    "description": "Premium handcrafted Achilles. Handcrafted with precision and care.",
     "price": 680,
     "compareAtPrice": 800,
-    "shortDescription": "Premium handcrafted Archilles",
+    "shortDescription": "Premium handcrafted Achilles",
     "category": "Frames",
     "type": "Wall Decor",
     "images": [
-      "/assets/ESKFRM0007 - Archilles.png"
+      "/assets/ESKFRM0007 - Achilles.png"
     ],
     "stock": 20,
     "badge": "SALE",
@@ -1302,17 +1302,17 @@
   {
     "id": "ESKFRM0008",
     "product_code": "ESKFRM0008",
-    "product_name": "Odessey 02",
+    "product_name": "Odyssey 02",
     "slug": "eskfrm0008",
-    "name": "Odessey 02",
-    "description": "Premium handcrafted Odessey 02. Handcrafted with precision and care.",
+    "name": "Odyssey 02",
+    "description": "Premium handcrafted Odyssey 02. Handcrafted with precision and care.",
     "price": 680,
     "compareAtPrice": 800,
-    "shortDescription": "Premium handcrafted Odessey 02",
+    "shortDescription": "Premium handcrafted Odyssey 02",
     "category": "Frames",
     "type": "Wall Decor",
     "images": [
-      "/assets/ESKFRM0008 - Odessey 02.png"
+      "/assets/ESKFRM0008 - Odyssey 02.png"
     ],
     "stock": 20,
     "badge": "SALE",

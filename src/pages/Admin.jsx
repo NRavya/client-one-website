@@ -12,6 +12,8 @@ export default function Admin() {
   const [status, setStatus] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [newOnly, setNewOnly] = useState(false);
+  const [newCount, setNewCount] = useState(0);
 
   // login form (reuse admin credentials)
   const [email, setEmail] = useState('admin@eskraft.in');
@@ -21,7 +23,8 @@ export default function Admin() {
     if (!token) return;
     setLoading(true); setError('');
     try {
-      const q = new URLSearchParams({ page, limit: 20, ...(status && { status }), ...(search && { search }) }).toString();
+      const effectiveStatus = newOnly ? 'PENDING_PAYMENT' : status;
+      const q = new URLSearchParams({ page, limit: 20, ...(effectiveStatus && { status: effectiveStatus }), ...(search && { search }) }).toString();
       const res = await fetch(`${API}/admin/orders?${q}`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (!data.success) throw new Error(data.error?.message);
@@ -32,7 +35,22 @@ export default function Admin() {
     finally { setLoading(false); }
   };
 
-  useEffect(()=>{ fetchOrders(); }, [token, status, page]);
+  useEffect(()=>{ fetchOrders(); }, [token, status, page, newOnly]);
+
+  // poll new orders count + auto-refresh when on New tab
+  useEffect(()=>{
+    if (!token) return;
+    const fetchNewCount = async ()=>{
+      try {
+        const res = await fetch(`${API}/admin/orders?status=PENDING_PAYMENT&limit=1`, { headers: { Authorization: `Bearer ${token}` } });
+        const d = await res.json();
+        if (d.success) setNewCount(d.data.total ?? 0);
+      } catch{}
+    };
+    fetchNewCount();
+    const id = setInterval(()=>{ fetchNewCount(); if (newOnly) fetchOrders(); }, 15000);
+    return ()=>clearInterval(id);
+  }, [token, newOnly]);
 
   const handleLogin = async (e) => {
     e.preventDefault(); setError('');
@@ -79,14 +97,19 @@ export default function Admin() {
         <button className="btn btn-outline" onClick={()=>{localStorage.removeItem('eskraft-token');localStorage.removeItem('eskraft-user');setToken(null);setUser(null);}}>Sign out</button>
       </div>
 
-      <div className="flex gap-sm mb-4" style={{flexWrap:'wrap'}}>
+      <div className="flex gap-sm mb-4" style={{flexWrap:'wrap', alignItems:'center'}}>
+        <button onClick={()=>{setNewOnly(!newOnly); setStatus(''); setPage(1);}} className="btn" style={{background: newOnly ? '#111' : '#fff', color: newOnly ? '#fff' : '#111', border:'1px solid #111', position:'relative'}}>
+          New Orders {newCount>0 && <span style={{background:'crimson',color:'#fff',borderRadius:12,padding:'2px 7px',fontSize:'0.7rem',marginLeft:6}}>{newCount}</span>}
+        </button>
         <input value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==='Enter'&&fetchOrders()} placeholder="Search order # or customer" style={{padding:'0.6rem',border:'1px solid #ddd',borderRadius:8, flex:1, minWidth:200}} />
-        <select value={status} onChange={e=>setStatus(e.target.value)} style={{padding:'0.6rem',border:'1px solid #ddd',borderRadius:8}}>
+        <select value={status} onChange={e=>{setStatus(e.target.value); setNewOnly(false);}} style={{padding:'0.6rem',border:'1px solid #ddd',borderRadius:8}} disabled={newOnly}>
           <option value="">All statuses</option>
           <option>PENDING_PAYMENT</option><option>PAID</option><option>PROCESSING</option><option>SHIPPED</option><option>DELIVERED</option><option>CANCELLED</option>
         </select>
         <button className="btn" onClick={()=>{setPage(1);fetchOrders();}}>Search</button>
+        <button className="btn btn-outline" onClick={fetchOrders}>↻ Refresh</button>
       </div>
+      {newOnly && <p className="text-sm mb-2" style={{color:'crimson'}}>Showing NEW orders only (PENDING_PAYMENT) — auto-refreshes every 15s</p>}
 
       {loading ? <p>Loading...</p> : error ? <p style={{color:'crimson'}}>{error}</p> : orders.length===0 ? <p>No orders yet. Place an order from Cart (with customer@test.com) then refresh.</p> : (
         <>
@@ -98,8 +121,8 @@ export default function Admin() {
           </tr></thead>
           <tbody>
           {orders.map(o=>(
-            <tr key={o.id} style={{borderBottom:'1px solid #eee'}}>
-              <td style={{padding:8,fontWeight:700}}>{o.orderNumber}</td>
+            <tr key={o.id} style={{borderBottom:'1px solid #eee', background: o.status==='PENDING_PAYMENT' ? '#FFF3CD' : 'transparent'}}>
+              <td style={{padding:8,fontWeight:700}}>{o.orderNumber} {o.status==='PENDING_PAYMENT' && <span style={{background:'crimson',color:'#fff',fontSize:'0.6rem',padding:'2px 6px',borderRadius:8,marginLeft:4}}>NEW</span>}</td>
               <td>{new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
               <td>{o.customer?.name}<br/><span className="text-xs text-gray">{o.customer?.email} {o.customer?.phone}</span></td>
               <td>{o.items?.map(i=>`${i.product_code||i.product?.product_code||''} | ${i.product_name||i.product?.product_name||i.product?.name} ×${i.quantity} (₹${i.unitPrice})`).join(', ')}</td>

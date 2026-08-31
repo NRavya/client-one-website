@@ -96,7 +96,8 @@ const Product = () => {
             <p className="text-sm font-bold" style={{ letterSpacing: '0.1em', color: 'var(--color-text)' }}>
               {product.category.toUpperCase()} · {product.type.toUpperCase()}
             </p>
-            <h1 className="text-4xl font-black">{product.product_name || product.name}</h1>
+            {product.product_code && <span style={{ fontSize: '0.8rem', letterSpacing: '0.1em', color: 'var(--color-gray)', fontWeight: 700 }}>{product.product_code}</span>}
+            <h1 className="font-black" style={{ fontSize: '2rem', lineHeight: 1.15 }}>{product.product_name || product.name}</h1>
             <div className="flex items-center gap-sm">
               <span className="text-3xl font-black">₹{product.price}</span>
               {product.compareAtPrice && (
