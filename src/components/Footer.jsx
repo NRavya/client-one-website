@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { InstagramIcon, FacebookIcon } from './icons';
+import { InstagramIcon, FacebookIcon, YouTubeIcon } from './icons';
 
 const Footer = () => {
   return (
@@ -10,7 +10,7 @@ const Footer = () => {
           
           {/* Brand & Story */}
           <div>
-            <img src="/assets/logo.png" alt="ESKRAFT Logo" style={{ height: '80px', marginBottom: '1rem', objectFit: 'contain' }} />
+            <img src="/assets/logo-white.png?v=4" alt="ESKRAFT Logo" style={{ height: '72px', marginBottom: '0.75rem', objectFit: 'contain', display: 'block' }} />
             <h3 className="font-heading text-2xl font-bold mb-4">ESKRAFT</h3>
             <p className="text-sm text-gray mb-2" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>
               No.13 Reddypalayam Street West -Mogappair Chennai-600037
@@ -50,11 +50,14 @@ const Footer = () => {
           <div>
             <h4 className="font-heading text-lg font-bold mb-4">CONNECT</h4>
             <div className="flex gap-sm mb-4">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#FFFFFF', display: 'flex' }}>
+              <a href="https://www.instagram.com/eskraft__?igsh=dHZpcHVwcHVnbmNn" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#FFFFFF', display: 'flex' }}>
                 <InstagramIcon size={20} />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: '#FFFFFF', display: 'flex' }}>
+              <a href="https://www.facebook.com/people/ES-Kraft/61581961087129" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: '#FFFFFF', display: 'flex' }}>
                 <FacebookIcon size={20} />
+              </a>
+              <a href="https://www.youtube.com/@eskraft" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style={{ color: '#FFFFFF', display: 'flex' }}>
+                <YouTubeIcon size={20} />
               </a>
             </div>
             <p className="text-xs mb-2" style={{ color: 'rgba(245, 239, 230, 0.8)' }}>Join our newsletter for exclusive drops.</p>
