@@ -1,0 +1,2 @@
+del /F /A "E:\project - client 01\image assets\*.png" "E:\project - client 01\image assets\*.jfif" "E:\project - client 01\image assets\*.avif" "E:\project - client 01\image assets\*.jpg" "E:\project - client 01\image assets\*.jpeg"
+del /F /A "E:\project - client 01\public/assets\*.png" "E:\project - client 01\public/assets\*.jfif" "E:\project - client 01\public/assets\*.avif" "E:\project - client 01\public/assets\*.jpg" "E:\project - client 01\public/assets\*.jpeg"
