@@ -1,4 +1,5 @@
 const prisma = require('../config/prisma');
+const { createCashfreeOrder } = require('../services/cashfree');
 
 const createOrder = async (req, res) => {
   try {
@@ -13,13 +14,21 @@ const createOrder = async (req, res) => {
       }
     }
 
+    // --- DB-only transaction: no network calls inside ---
     const order = await prisma.$transaction(async (tx) => {
+      // Batch fetch all products in 2 queries max (by id + by slug) instead of N*2 sequential queries
+      const ids = [...new Set(items.map((i) => i.productId))];
+      const [byId, bySlug] = await Promise.all([
+        tx.product.findMany({ where: { id: { in: ids } } }),
+        tx.product.findMany({ where: { slug: { in: ids } } }),
+      ]);
+      const productById = new Map(byId.map((p) => [p.id, p]));
+      const productBySlug = new Map(bySlug.map((p) => [p.slug, p]));
+
       let subtotal = 0;
       const orderItemsData = [];
       for (const item of items) {
-        // support id or slug as productId
-        let product = await tx.product.findUnique({ where: { id: item.productId } });
-        if (!product) product = await tx.product.findUnique({ where: { slug: item.productId } });
+        const product = productById.get(item.productId) || productBySlug.get(item.productId);
         if (!product || !product.active) {
           throw Object.assign(new Error(`Product ${item.productId} not found`), { code: 'PRODUCT_NOT_FOUND' });
         }
@@ -30,26 +39,71 @@ const createOrder = async (req, res) => {
         subtotal += itemSubtotal;
         orderItemsData.push({ productId: product.id, product_code: product.product_code, product_name: product.product_name, quantity: item.quantity, unitPrice: product.price, subtotal: itemSubtotal });
       }
-      const shippingFee = subtotal >= 500 ? 0 : 60;
+      const shippingFee = subtotal > 750 ? 0 : 60;
       const total = subtotal + shippingFee;
-      const orderNumber = `ESK-${Date.now()}-${Math.floor(Math.random()*900+100)}`;
+      const orderNumber = `ESK-${Date.now()}-${Math.floor(Math.random() * 900 + 100)}`;
 
       const created = await tx.order.create({
         data: {
           orderNumber, customerId: req.user.customerId, subtotal, shippingFee, total,
           status: 'PENDING_PAYMENT', paymentStatus: 'PENDING',
-          items: { create: orderItemsData }
+          items: { create: orderItemsData },
         },
-        include: { items: { include: { product: true } } }
+        include: { items: { include: { product: true } } },
       });
-      // decrement stock
-      for (const oi of orderItemsData) {
-        await tx.product.update({ where: { id: oi.productId }, data: { stock: { decrement: oi.quantity } } });
+
+      // Atomic stock decrement with guard to prevent race-condition oversell.
+      // Run in parallel inside the same tx (still atomic, faster than sequential for loop)
+      const decResults = await Promise.all(
+        orderItemsData.map((oi) =>
+          tx.product.updateMany({
+            where: { id: oi.productId, stock: { gte: oi.quantity } },
+            data: { stock: { decrement: oi.quantity } },
+          })
+        )
+      );
+      for (let i = 0; i < decResults.length; i++) {
+        if (decResults[i].count === 0) {
+          throw Object.assign(new Error(`Insufficient stock for ${orderItemsData[i].product_name} (concurrent update)`), { code: 'OUT_OF_STOCK' });
+        }
       }
       return created;
-    });
+    }, { maxWait: 10000, timeout: 15000 });
 
-    res.status(201).json({ success: true, data: order, message: 'Order created successfully' });
+     // create Cashfree payment order - auto-fill from logged-in user or checkout form body
+    // --- Cashfree AFTER transaction commit (never inside $transaction) ---
+    let cashfreeData = null;
+    if (process.env.CASHFREE_APP_ID && process.env.CASHFREE_APP_ID !== 'your_cashfree_app_id') {
+      try {
+        const { customerDetails } = req.body;
+        const cf = await createCashfreeOrder({ amount: order.total, orderId: order.orderNumber, customerId: req.user.customerId, customerName: customerDetails?.name || req.user.name, customerEmail: customerDetails?.email || req.user.email, customerPhone: customerDetails?.phone || req.user.phone });
+        cashfreeData = { payment_session_id: cf.payment_session_id, payment_link: cf.payment_link, cf_order_id: cf.cf_order_id };
+        await prisma.payment.create({ data: { orderId: order.id, providerOrderId: String(cf.cf_order_id), amount: order.total, status: 'PENDING' } });
+      } catch (e) {
+        const cfErr = e.response?.data || e.data || e.message;
+        console.error('Cashfree create failed:', JSON.stringify(cfErr, null, 2));
+        const isAuthError = cfErr?.message?.toLowerCase?.().includes('auth') || cfErr?.code === 'authentication_failed' || e.response?.status === 401;
+        // Compensating transaction: restore stock + mark FAILED so no dangling PENDING_PAYMENT / oversell
+        await prisma.$transaction(async (tx2) => {
+          await tx2.order.update({ where: { id: order.id }, data: { status: 'FAILED', paymentStatus: 'FAILED' } });
+          await Promise.all(
+            order.items.map((it) => tx2.product.update({ where: { id: it.productId }, data: { stock: { increment: it.quantity } } }))
+          );
+        }).catch(() => {});
+        return res.status(502).json({
+          success: false,
+          error: {
+            code: isAuthError ? 'PAYMENT_AUTH_FAILED' : 'PAYMENT_PROVIDER_ERROR',
+            message: isAuthError
+              ? 'Payment provider auth failed. Check CASHFREE_ENVIRONMENT vs key (PRODUCTION key requires ENVIRONMENT=PRODUCTION).'
+              : 'Order created but payment session failed. Stock restored. Please retry.',
+            details: process.env.NODE_ENV !== 'production' ? cfErr : undefined,
+          },
+          data: { order, cashfree: null },
+        });
+      }
+    }
+    res.status(201).json({ success: true, data: { ...order, cashfree: cashfreeData }, message: 'Order created successfully' });
   } catch (error) {
     if (error.code === 'PRODUCT_NOT_FOUND') return res.status(404).json({ success: false, error: { code: 'PRODUCT_NOT_FOUND', message: error.message } });
     if (error.code === 'OUT_OF_STOCK') return res.status(400).json({ success: false, error: { code: 'OUT_OF_STOCK', message: error.message } });

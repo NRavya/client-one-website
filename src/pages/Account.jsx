@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import InfoPage from '../components/InfoPage';
 import { LogOut, Package, ChevronDown, ChevronUp } from 'lucide-react';
-
-const API = '/api';
+import { API } from '../utils/api';
 
 const inputStyle = {
   width: '100%',
@@ -47,7 +46,7 @@ const Account = () => {
   const [expandedOrder, setExpandedOrder] = useState(null);
 
   const [mode, setMode] = useState('login');
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', password: '' });
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
 
@@ -80,7 +79,7 @@ const Account = () => {
     const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
     const body = mode === 'login'
       ? { email: form.email, password: form.password }
-      : { name: form.name, email: form.email, phone: form.phone, password: form.password };
+      : { name: form.name, email: form.email, phone: form.phone, address: form.address, password: form.password };
 
     try {
       const res = await fetch(`${API}${endpoint}`, {
@@ -112,7 +111,7 @@ const Account = () => {
     setToken(null);
     setUser(null);
     setOrders([]);
-    setForm({ name: '', email: '', phone: '', password: '' });
+    setForm({ name: '', email: '', phone: '', address: '', password: '' });
   };
 
   if (!token || !user) {
@@ -151,6 +150,9 @@ const Account = () => {
             <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="Email" style={inputStyle} aria-label="Email" />
             {mode === 'register' && (
               <input name="phone" type="tel" value={form.phone} onChange={handleChange} placeholder="Phone (optional)" style={inputStyle} aria-label="Phone" />
+            )}
+            {mode === 'register' && (
+              <textarea name="address" value={form.address} onChange={handleChange} required placeholder="Address" rows={2} style={inputStyle} aria-label="Address" />
             )}
             <input name="password" type="password" value={form.password} onChange={handleChange} required minLength={6} placeholder="Password" style={inputStyle} aria-label="Password" />
             <button type="submit" className="btn" disabled={authLoading}>

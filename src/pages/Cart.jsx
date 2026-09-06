@@ -2,23 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/useCart';
+import CheckoutForm from '../components/CheckoutForm';
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, subtotal, totalCount } = useCart();
+  const [showCheckout, setShowCheckout] = React.useState(false);
   const [checkoutMsg, setCheckoutMsg] = React.useState('');
-  const handleCheckout = async () => {
-    const token = localStorage.getItem('eskraft-token');
-    if (!token) { setCheckoutMsg('Please sign in via Account to place order'); return; }
-    try {
-      const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`}, body: JSON.stringify({ items: items.map(i=>({productId:i.slug||i.id, quantity:i.quantity})) }) });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error?.message);
-      setCheckoutMsg(`Order placed! ${data.data.orderNumber} - Total ₹${data.data.total}`);
-      clearCart();
-    } catch(e){ setCheckoutMsg(e.message||'Checkout failed'); }
-  };
 
-  const shipping = subtotal >= 500 ? 0 : 60;
+  const shipping = subtotal > 750 ? 0 : 60;
 
   if (items.length === 0) {
     return (
@@ -96,12 +87,22 @@ const Cart = () => {
             </div>
           </div>
 
-          <button type="button" onClick={handleCheckout} className="btn btn-accent" style={{ padding: '1.25rem' }}>
-            PROCEED TO CHECKOUT
-          </button>
+          {!showCheckout ? (
+            <button type="button" onClick={() => {
+              const token = localStorage.getItem('eskraft-token');
+              if (!token) { setCheckoutMsg('Please sign in via Account to place order'); return; }
+              setShowCheckout(true);
+            }} className="btn btn-accent" style={{ padding: '1.25rem' }}>
+              PROCEED TO CHECKOUT
+            </button>
+          ) : (
+            <CheckoutForm items={items} onSuccess={clearCart} />
+          )}
+
+          {/* Cashfree Payment Form removed - use PAY WITH CASHFREE PG checkout only */}
           {checkoutMsg && <p className="text-sm text-center" style={{textTransform:'none'}}>{checkoutMsg}</p>}
           <p className="text-xs text-center text-gray" style={{ textTransform: 'none' }}>
-            Verified COD available at checkout.
+            Secure checkout · Easy 7-day returns
           </p>
         </aside>
       </div>

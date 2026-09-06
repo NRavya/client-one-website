@@ -8,13 +8,14 @@ const steps = [
   { icon: <Gift size={28} />, title: '4. Crafted & Shipped', desc: 'Your custom piece is handcrafted and shipped in 7–10 days.' },
 ];
 
-const productTypes = ['Name Keychain', 'Photo Frame', 'Anime Stand', 'Wall Art', 'Something Else'];
+const productTypes = ['Custom Keychain', 'Frame - 9x12 inches', 'Frame - 15x20 inches', 'Frame - 18x24 inches', 'Phone Stand', 'Something Else'];
 
 const pricing = {
-  'Name Keychain': { price: 150, note: 'Custom engraved name keychain' },
-  'Photo Frame': { price: 680, note: 'Handcrafted laser-engraved frame' },
-  'Anime Stand': { price: 200, note: 'Personalized anime phone stand' },
-  'Wall Art': { price: 700, note: 'Custom laser-cut wall panel' },
+  'Custom Keychain': { price: 150, note: 'Custom engraved name keychain' },
+  'Frame - 9x12 inches': { price: 1000, note: 'Handcrafted laser-engraved frame - 9x12 inches' },
+  'Frame - 15x20 inches': { price: 1600, note: 'Handcrafted laser-engraved frame - 15x20 inches' },
+  'Frame - 18x24 inches': { price: 2200, note: 'Handcrafted laser-engraved frame - 18x24 inches' },
+  'Phone Stand': { price: 200, note: 'Personalized phone stand' },
   'Something Else': { price: null, note: 'We will quote based on your idea' },
 };
 
@@ -53,6 +54,11 @@ const CustomOrders = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    try{
+      const arr=JSON.parse(localStorage.getItem('eskraft-custom-orders')||'[]');
+      arr.unshift({id:`CR-${Date.now().toString().slice(-6)}`,name:form.name,contact:form.contact,type:form.type,details:form.details,refs:refImages.length,createdAt:new Date().toISOString(),status:'pending'});
+      localStorage.setItem('eskraft-custom-orders',JSON.stringify(arr));
+    }catch{}
     setSent(true);
   };
 
@@ -60,10 +66,10 @@ const CustomOrders = () => {
     <div>
       <section style={{ backgroundColor: 'var(--color-text)', color: 'var(--color-bg)', padding: '6rem 0' }}>
         <div className="container flex flex-col items-center text-center gap-md">
-          <span className="text-sm font-bold" style={{ letterSpacing: '0.1em', color: 'var(--color-wood-light)' }}>IF YOU CAN DREAM IT, WE CAN CUT IT.</span>
+          <span className="text-sm font-bold" style={{ letterSpacing: '0.1em', color: 'var(--color-wood-light)' }}>IF YOU CAN DREAM IT, WE CAN MAKE IT.</span>
           <h1 className="text-5xl font-black">CUSTOM ORDERS</h1>
           <p className="text-lg" style={{ maxWidth: '600px', opacity: 0.8, textTransform: 'none', fontWeight: 400 }}>
-            Personalized wooden pieces made exactly how you want them — engraved names, favorite characters, photo frames and more.
+            Personalized wooden pieces made exactly how you want them — engraved names, delightful keychains, photo frames and more.
           </p>
         </div>
       </section>

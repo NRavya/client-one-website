@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const messages = [
-  "VERIFIED COD AVAILABLE   |    LIVE SALE 15% OFF ON ODYSSEY FRAMES   |    EASY 30-DAY RETURN   |    PRECISION CUTS"
+  "LIVE SALE 15% OFF ON ODYSSEY FRAMES   |    EASY 30-DAY RETURN   |    PRECISION CUTS"
 ];
 
 const AnnouncementBar = () => {

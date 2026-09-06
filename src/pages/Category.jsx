@@ -11,7 +11,7 @@ const categoryMap = {
   'engraved-crafts': { title: 'ENGRAVED WOODEN CRAFTS', filter: (p) => p.category === 'Engraved Wooden Crafts' },
   'dog-tag-keychains': { title: 'DOG TAG KEYCHAINS', filter: (p) => p.category === 'Dog Tag Keychain' },
   'engraved-dates': { title: 'ENGRAVED DATES', filter: (p) => p.category === 'Engraved Dates' },
-  'new-drops': { title: 'NEW DROPS', filter: (p) => p.isNewArrival },
+  'new-drops': { title: 'NEW DROPS', filter: () => false },
   'bestsellers': { title: 'BESTSELLERS', filter: (p) => p.isBestseller },
   /* legacy aliases */
   'the-odyssey': { title: 'FRAMES', filter: (p) => p.category === 'Frames' },
@@ -22,7 +22,7 @@ const filters = [
   { label: 'All', slug: 'all' },
   { label: 'New Drops', slug: 'new-drops' },
   { label: 'Frames', slug: 'frames' },
-  { label: 'Anime Stands', slug: 'anime-phone-stands' },
+  { label: 'Phone Stands', slug: 'anime-phone-stands' },
   { label: 'Engraved Crafts', slug: 'engraved-crafts' },
   { label: 'Dog Tags', slug: 'dog-tag-keychains' },
   { label: 'Engraved Dates', slug: 'engraved-dates' },
@@ -68,7 +68,7 @@ const Category = () => {
           ))}
         </div>
       ) : (
-        <p className="text-gray text-center section">Nothing here yet — new drops land every Friday.</p>
+        <p className="text-gray text-center section">Nothing here yet — new drops land every month.</p>
       )}
     </div>
   );

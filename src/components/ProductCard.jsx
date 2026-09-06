@@ -29,7 +29,7 @@ const ProductCard = ({ product, showCode = false }) => {
           loading="lazy"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-        {product.badge && (
+        {product.badge && product.badge !== 'NEW' && (
           <span className={`badge ${badgeClass(product.badge)}`} style={{ position: 'absolute', top: '12px', left: '12px' }}>
             {product.badge}
           </span>
@@ -49,7 +49,6 @@ const ProductCard = ({ product, showCode = false }) => {
         )}
         <div className="flex items-center gap-sm">
           <span className="text-lg font-black">₹{product.price}</span>
-          {product.compareAtPrice && <span className="text-sm text-gray" style={{ textDecoration: 'line-through' }}>₹{product.compareAtPrice}</span>}
         </div>
       </div>
       <button

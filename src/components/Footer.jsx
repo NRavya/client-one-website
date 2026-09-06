@@ -42,7 +42,7 @@ const Footer = () => {
               <Link to="/faq" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>FAQ</Link>
               <Link to="/shipping-returns" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Shipping & Returns</Link>
               <Link to="/contact" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Contact Us</Link>
-              <Link to="/track-order" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Track Order</Link>
+
             </div>
           </div>
 
@@ -60,7 +60,7 @@ const Footer = () => {
                 <YouTubeIcon size={20} />
               </a>
             </div>
-            <p className="text-xs mb-2" style={{ color: 'rgba(245, 239, 230, 0.8)' }}>Join our newsletter for exclusive drops.</p>
+            <p className="text-xs mb-2" style={{ color: 'rgba(245, 239, 230, 0.8)' }}>Join our newsletter to get notified about the products.</p>
             <div style={{ display: 'flex', border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '4px', overflow: 'hidden' }}>
               <input type="email" placeholder="Email Address" style={{ background: 'transparent', border: 'none', padding: '8px 12px', color: '#FFFFFF', outline: 'none', flex: 1, fontSize: '0.875rem' }} />
               <button style={{ background: '#333333', padding: '8px 16px', color: '#FFFFFF', fontWeight: 'bold', fontSize: '0.875rem' }}>&rarr;</button>
@@ -69,11 +69,8 @@ const Footer = () => {
 
         </div>
 
-        {/* Copyright */}
+        {/* Links */}
         <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }} className="md:flex-row md:justify-between">
-          <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
-            &copy; {new Date().getFullYear()} ESKRAFT. All rights reserved.
-          </p>
           <div className="flex gap-sm text-xs" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
             <Link to="/terms">Terms & Conditions</Link>
             <Link to="/shipping-returns">Shipping & Returns</Link>

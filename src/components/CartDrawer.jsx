@@ -104,7 +104,7 @@ const CartDrawer = () => {
             </Link>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', color: 'var(--color-gray)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.7rem' }}><Lock size={12} /> Secure</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.7rem' }}><Truck size={12} /> COD</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.7rem' }}><Truck size={12} /> Fast Shipping</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.7rem' }}><RefreshCcw size={12} /> Returns</span>
             </div>
           </div>

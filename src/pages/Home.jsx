@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, ShieldCheck, Truck, Package, RotateCcw, PenTool, Frame, Smartphone, CalendarHeart, Tag } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Truck, RotateCcw, PenTool, Frame, Smartphone, CalendarHeart, Tag, Gift } from 'lucide-react';
 import { InstagramIcon } from '../components/icons';
 import productsData from '../data/products.json';
 import ProductCard from '../components/ProductCard';
@@ -14,10 +14,29 @@ const categories = [
 
 ];
 
+const HandHeartIcon = ({ size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 21 C12 21 5 16.5 5 10.2 C5 7.1 7.3 5 10 5 C11.6 5 12.9 5.9 14 7.1 C15.1 5.9 16.4 5 18 5 C20.7 5 23 7.1 23 10.2 C23 16.5 16 21 16 21 L12 21 Z M12 21 L12 13.5 M10.5 13.5 C10.5 13.5 9 12 9 10.2 M13.5 13.5 C13.5 13.5 15 12 15 10.2" opacity="0" />
+    <path d="M8 12.5 L8 6.2 C8 5.2 8.8 4.4 9.8 4.4 C10.8 4.4 11.6 5.2 11.6 6.2 L11.6 10 M11.6 10 L11.6 5.5 C11.6 4.5 12.4 3.7 13.4 3.7 C14.4 3.7 15.2 4.5 15.2 5.5 L15.2 10 M15.2 10 L15.2 7 C15.2 6 16 5.2 17 5.2 C18 5.2 18.8 6 18.8 7 L18.8 12.2 C18.8 14.3 18 16.4 16.5 17.9 L13.5 20.9 C12.7 21.7 11.5 21.7 10.7 20.9 L6.2 16.4 C5 15.2 4.5 13.5 5.2 12 L8 12.5 Z" />
+    <path d="M10.2 15.2 C9.5 14.5 9.5 13.3 10.2 12.6 C10.9 11.9 12.1 11.9 12.8 12.6 C13.5 11.9 14.7 11.9 15.4 12.6 C16.1 13.3 16.1 14.5 15.4 15.2 L12.8 17.8 L10.2 15.2 Z" />
+  </svg>
+);
+
+const LaserIcon = ({ size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="6" y="3" width="12" height="4" rx="0.5" />
+    <path d="M10 7 L11.5 11 L12 11.8 L12.5 11 L14 7" />
+    <path d="M12 11.8 L12 15" />
+    <path d="M10 14.5 L9 17 M12 15 L12 17 M14 14.5 L15 17" />
+    <rect x="3" y="19" width="7" height="2.5" />
+    <rect x="14" y="19" width="7" height="2.5" />
+  </svg>
+);
+
 const features = [
-  { title: 'HANDCRAFTED', desc: 'Designed and crafted with attention to detail.', icon: <PenTool size={40} /> },
-  { title: 'PRECISION CUT', desc: 'Laser-cut and engraved for clean details.', icon: <Package size={40} /> },
-  { title: 'MADE FOR GIFTING', desc: 'Small things that become memorable.', icon: <Star size={40} /> },
+  { title: 'HANDCRAFTED', desc: 'Designed and crafted with attention to detail.', icon: <HandHeartIcon size={44} /> },
+  { title: 'PRECISION CUT', desc: 'Laser-cut and engraved for clean details.', icon: <LaserIcon size={44} /> },
+  { title: 'MADE FOR GIFTING', desc: 'Small things that become memorable.', icon: <Gift size={40} /> },
 ];
 
 const instagramPosts = [
@@ -28,7 +47,7 @@ const instagramPosts = [
 ];
 
 const Home = () => {
-  const newDrops = productsData.filter((p) => p.isNewArrival);
+  const newDrops = [];
   const bestsellers = productsData.filter((p) => p.isBestseller);
 
   return (
@@ -125,12 +144,12 @@ const Home = () => {
       {/* Why Eskraft */}
       <section className="section container">
         <h2 className="section-title text-center mb-12">MADE DIFFERENT.</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-lg text-center">
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem 3rem', textAlign: 'center' }}>
           {features.map((feat) => (
-            <div key={feat.title} className="flex flex-col items-center gap-xs">
-              <div style={{ marginBottom: '0.75rem', color: '#888888' }}>{feat.icon}</div>
-              <h3 className="text-base font-bold">{feat.title}</h3>
-              <p className="text-sm text-gray" style={{ textTransform: 'none' }}>{feat.desc}</p>
+            <div key={feat.title} className="flex flex-col items-center gap-xs" style={{ alignItems: 'center', justifyContent: 'flex-start' }}>
+              <div style={{ marginBottom: '1rem', color: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{feat.icon}</div>
+              <h3 className="text-base font-bold" style={{ textAlign: 'center' }}>{feat.title}</h3>
+              <p className="text-sm text-gray" style={{ textTransform: 'none', textAlign: 'center', maxWidth: '260px' }}>{feat.desc}</p>
             </div>
           ))}
         </div>
@@ -140,7 +159,6 @@ const Home = () => {
       <div style={{ backgroundColor: '#F5F5F5', padding: '2rem 0', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container flex flex-wrap justify-center gap-lg text-sm font-bold">
           <span className="flex items-center gap-xs"><Truck size={18} /> FREE SHIPPING ABOVE ₹500</span>
-          <span className="flex items-center gap-xs"><ShieldCheck size={18} /> SECURE COD AVAILABLE</span>
           <span className="flex items-center gap-xs"><RotateCcw size={18} /> EASY 7-DAY RETURNS</span>
         </div>
       </div>

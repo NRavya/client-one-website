@@ -8,20 +8,16 @@ const faqs = [
     a: 'All our products are crafted from Teak wood, laser-cut and hand-finished. Every piece is inspected before it ships.',
   },
   {
-    q: 'Do you use Teak Wood?',
-    a: 'Yes, all our products are made from Teak wood. Each piece is laser-cut and hand-finished with care.',
-  },
-  {
     q: 'Do you take custom orders?',
     a: 'Yes — names, logos, anime art, photo frames, you name it. Head to the Custom Orders page and tell us what you have in mind.',
   },
   {
     q: 'How long does delivery take?',
-    a: 'Standard orders ship in 3–5 business days. Custom pieces take 7–10 days since they are made just for you.',
+    a: 'Standard orders ship in 6–7 business days. Custom pieces take 7–10 days since they are made just for you.',
   },
   {
-    q: 'Is Cash on Delivery available?',
-    a: 'Yes, verified COD is available across India. For orders above ₹999 we confirm the order on call/WhatsApp before dispatch.',
+    q: 'What payment methods do you accept?',
+    a: 'We accept all major prepaid methods — UPI, cards, net banking and wallets via our secure payment gateway.',
   },
   {
     q: 'Can I return a personalized item?',

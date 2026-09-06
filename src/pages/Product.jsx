@@ -5,10 +5,20 @@ import productsData from '../data/products.json';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/useCart';
 
+const FRAME_SIZES = [
+  { label: '9×12 inches', price: 800 },
+  { label: '15×20 inches', price: 1400 },
+  { label: '18×24 inches', price: 2000 },
+];
+
 const Product = () => {
   const { slug } = useParams();
   const { addItem } = useCart();
   const product = productsData.find((p) => p.slug === slug);
+
+  const isFrame = product?.category === 'Frames';
+  const [selectedSize, setSelectedSize] = useState(FRAME_SIZES[0]);
+  const displayPrice = isFrame ? selectedSize.price : product?.price;
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -20,6 +30,7 @@ const Product = () => {
     setActiveImage(0);
     setQuantity(1);
     setAdded(false);
+    setSelectedSize(FRAME_SIZES[0]);
   }
 
   if (!product) {
@@ -38,7 +49,10 @@ const Product = () => {
   const suggestions = related.length > 0 ? related : fallbackRelated.slice(0, 3);
 
   const handleAddToCart = () => {
-    addItem(product, quantity);
+    const item = isFrame ? { ...product, price: displayPrice, name: `${product.name} (${selectedSize.label})`, selectedSize: selectedSize.label } : product;
+    // use composite id for frame variants so different sizes are separate cart lines
+    if (isFrame) item.id = `${product.id}__${selectedSize.label}`;
+    addItem(item, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -54,8 +68,8 @@ const Product = () => {
           <div>
             <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5', aspectRatio: '4/5' }}>
               <img src={product.images[activeImage]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              {product.badge && (
-                <span className={`badge ${product.badge === 'NEW' ? 'badge-new' : product.badge === 'LIMITED DROP' ? 'badge-limited' : ''}`} style={{ position: 'absolute', top: '16px', left: '16px' }}>
+              {product.badge && product.badge !== 'NEW' && (
+                <span className={`badge ${product.badge === 'LIMITED DROP' ? 'badge-limited' : ''}`} style={{ position: 'absolute', top: '16px', left: '16px' }}>
                   {product.badge}
                 </span>
               )}
@@ -99,37 +113,41 @@ const Product = () => {
             {product.product_code && <span style={{ fontSize: '0.8rem', letterSpacing: '0.1em', color: 'var(--color-gray)', fontWeight: 700 }}>{product.product_code}</span>}
             <h1 className="font-black" style={{ fontSize: '2rem', lineHeight: 1.15 }}>{product.product_name || product.name}</h1>
             <div className="flex items-center gap-sm">
-              <span className="text-3xl font-black">₹{product.price}</span>
-              {product.compareAtPrice && (
-                <>
-                  <span className="text-lg text-gray" style={{ textDecoration: 'line-through' }}>₹{product.compareAtPrice}</span>
-                  <span className="badge badge-new">SAVE ₹{product.compareAtPrice - product.price}</span>
-                </>
-              )}
+              <span className="text-3xl font-black">₹{displayPrice}</span>
             </div>
+            {isFrame && (
+              <div>
+                <p className="font-bold text-sm mb-2" style={{letterSpacing:'0.08em'}}>FRAME SIZE</p>
+                <div className="flex gap-sm" style={{flexWrap:'wrap'}}>
+                  {FRAME_SIZES.map(s => (
+                    <button key={s.label} type="button" onClick={()=>setSelectedSize(s)}
+                      style={{padding:'0.6rem 1rem',borderRadius:8,border:selectedSize.label===s.label?'2px solid #111':'1px solid var(--color-border)',background:selectedSize.label===s.label?'#111':'#fff',color:selectedSize.label===s.label?'#fff':'#111',fontWeight:700,fontSize:'0.85rem'}}>
+                      {s.label} — ₹{s.price}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-sm">
               <label htmlFor="qty" className="font-bold text-sm">QUANTITY</label>
               <div className="flex items-center" style={{ border: '1px solid var(--color-border)', borderRadius: '8px' }}>
                 <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} aria-label="Decrease quantity" style={{ padding: '0.6rem 1rem' }}>−</button>
                 <input id="qty" value={quantity} readOnly aria-label="Quantity" style={{ width: '48px', textAlign: 'center', fontWeight: 700 }} />
-                <button type="button" onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))} aria-label="Increase quantity" style={{ padding: '0.6rem 1rem' }}>+</button>
+                <button type="button" onClick={() => setQuantity((q) => q + 1)} aria-label="Increase quantity" style={{ padding: '0.6rem 1rem' }}>+</button>
               </div>
-              <span className="text-sm" style={{color:'var(--color-text)'}}>{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</span>
             </div>
 
             <button
               type="button"
               onClick={handleAddToCart}
-              disabled={product.stock === 0}
               className="btn btn-accent"
               style={{ padding: '1.25rem', fontSize: '1rem' }}
             >
-              {added ? (<><Check size={20} /> ADDED TO CART</>) : product.stock === 0 ? 'SOLD OUT' : 'ADD TO CART'}
+              {added ? (<><Check size={20} /> ADDED TO CART</>) : 'ADD TO CART'}
             </button>
 
             <div className="flex flex-col gap-xs text-sm" style={{color:'var(--color-text)'}}>
               <span className="flex items-center gap-xs"><Truck size={16} /> Free shipping above ₹500</span>
-              <span className="flex items-center gap-xs"><ShieldCheck size={16} /> Verified COD available</span>
               <span className="flex items-center gap-xs"><RotateCcw size={16} /> Easy 7-day returns</span>
             </div>
 

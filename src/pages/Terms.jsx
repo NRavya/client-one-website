@@ -13,17 +13,17 @@ const Terms = () => {
 
         <section>
           <h2 className="font-bold text-lg mb-2">2. Orders & Products</h2>
-          <p>All products are laser-cut and hand-assembled, with designs created by ESKraft (some AI-generated). Products are primarily decorative. Orders under ₹200 are non-returnable and non-refundable. For products above ₹200, refunds or replacements are handled on a case-by-case basis.</p>
+          <p>All products are laser-cut and hand-assembled, with designs created by ESKraft (some AI-generated). Products are primarily decorative.</p>
         </section>
 
         <section>
           <h2 className="font-bold text-lg mb-2">3. Pricing & Payment</h2>
-          <p>All prices are in INR and may vary based on availability and discounts. We accept all forms of payment, including online payments, UPI, (NO CASH ON DELIVERY).</p>
+          <p>All prices are in INR and may vary based on availability and discounts. We accept all forms of payment, including online payments, UPI, <strong>NO CASH ON DELIVERY</strong>.</p>
         </section>
 
         <section>
           <h2 className="font-bold text-lg mb-2">4. Shipping & Delivery</h2>
-          <p>ESKraft delivers across India via DTDC or personally near Chennai. Delivery timelines vary by location, and shipping charges apply for orders under ₹100 for ₹200 and ₹30 above ₹200 and FREE DELIVERY above ₹400. ESKraft is responsible for personally delivered parcels; for DTDC deliveries, the courier is responsible once the parcel is dispatched. You will get a notification regarding the delivery type.</p>
+          <p>ESKraft delivers across India via DTDC or personally near Chennai. Delivery timelines vary by location, and shipping charges apply for orders ₹200 to ₹750 and <strong>FREE DELIVERY</strong> above ₹750. ESKraft is responsible for personally delivered parcels; for DTDC deliveries, the courier is responsible once the parcel is dispatched. You will get a notification regarding the delivery type.</p>
         </section>
 
         <section>
