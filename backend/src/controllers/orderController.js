@@ -73,6 +73,12 @@ const createOrder = async (req, res) => {
      // create Cashfree payment order - auto-fill from logged-in user or checkout form body
     // --- Cashfree AFTER transaction commit (never inside $transaction) ---
     let cashfreeData = null;
+    console.log('Cashfree env check:', {
+      hasAppId: Boolean(process.env.CASHFREE_APP_ID),
+      appIdPlaceholder: process.env.CASHFREE_APP_ID === 'your_cashfree_app_id',
+      hasSecretKey: Boolean(process.env.CASHFREE_SECRET_KEY),
+      environment: process.env.CASHFREE_ENVIRONMENT
+    });
     if (process.env.CASHFREE_APP_ID && process.env.CASHFREE_APP_ID !== 'your_cashfree_app_id') {
       try {
         const { customerDetails } = req.body;
