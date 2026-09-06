@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-const API='/api';
+import { API } from '../utils/api';
 const STATUS_COLOR={PENDING_PAYMENT:{bg:'#FFF3CD',c:'#856404'},PAID:{bg:'#D4EDDA',c:'#155724'},PROCESSING:{bg:'#CCE5FF',c:'#004085'},SHIPPED:{bg:'#D1ECF1',c:'#0C5460'},DELIVERED:{bg:'#D4EDDA',c:'#155724'},CANCELLED:{bg:'#F8D7DA',c:'#721C24'},FAILED:{bg:'#F8D7DA',c:'#721C24'},REFUNDED:{bg:'#E2E3E5',c:'#383D41'}};
 const CUSTOM_STATUS_COLOR={pending:{bg:'#FFF3CD',c:'#856404'},reviewing:{bg:'#CCE5FF',c:'#004085'},approved:{bg:'#D4EDDA',c:'#155724'},shipped:{bg:'#D1ECF1',c:'#0C5460'},rejected:{bg:'#F8D7DA',c:'#721C24'}};
 export default function Admin(){
@@ -17,22 +17,36 @@ export default function Admin(){
       const effective=newOnly?'PENDING_PAYMENT':status;
       const q=new URLSearchParams({page,limit:20,...(effective&&{status:effective}),...(search&&{search})}).toString();
       const res=await fetch(`${API}/admin/orders?${q}`,{headers:{Authorization:`Bearer ${token}`}});
-      const data=await res.json();if(!data.success) throw new Error(data.error?.message);
+      const text=await res.text();
+      let data; try{ data=JSON.parse(text)}catch{ throw new Error(text || `Server returned ${res.status} - backend not reachable`)}
+      if(!res.ok || !data.success) throw new Error(data.error?.message || `Failed (${res.status})`);
       if(Array.isArray(data.data)){setOrders(data.data);setTotal(data.data.length)} else {setOrders(data.data.orders);setTotal(data.data.total)}
     }catch(e){setError(e.message)} finally{setLoading(false)}
   };
   useEffect(()=>{fetchOrders()},[token,status,page,newOnly]);
   useEffect(()=>{
     if(!token) return;
-    const fn=async()=>{try{const r=await fetch(`${API}/admin/orders?status=PENDING_PAYMENT&limit=1`,{headers:{Authorization:`Bearer ${token}`}});const d=await r.json();if(d.success) setNewCount(d.data.total??0)}catch{}};
+    const fn=async()=>{try{const r=await fetch(`${API}/admin/orders?status=PENDING_PAYMENT&limit=1`,{headers:{Authorization:`Bearer ${token}`}});const t=await r.text(); const d=JSON.parse(t); if(d.success) setNewCount(d.data.total??0)}catch{}};
     fn();const id=setInterval(()=>{fn();if(newOnly) fetchOrders()},15000);return()=>clearInterval(id);
   },[token,newOnly]);
   const handleLogin=async e=>{
     e.preventDefault();setError('');
-    try{const r=await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json();if(!d.success) throw new Error(d.error?.message);if(d.data.user.role!=='ADMIN'&&d.data.user.role!=='SUPER_ADMIN') throw new Error('Not an admin account');localStorage.setItem('eskraft-token',d.data.token);localStorage.setItem('eskraft-user',JSON.stringify(d.data.user));setToken(d.data.token);setUser(d.data.user)}catch(e){setError(e.message)}
+    try{
+      const r=await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+      const text=await r.text();
+      let d; try{ d=JSON.parse(text)}catch{ throw new Error(text || `Server returned ${r.status} ${r.statusText} - backend not reachable`) }
+      if(!r.ok || !d.success) throw new Error(d.error?.message || `Login failed (${r.status})`);
+      if(d.data.user.role!=='ADMIN'&&d.data.user.role!=='SUPER_ADMIN') throw new Error('Not an admin account');
+      localStorage.setItem('eskraft-token',d.data.token);localStorage.setItem('eskraft-user',JSON.stringify(d.data.user));setToken(d.data.token);setUser(d.data.user)
+    }catch(e){setError(e.message)}
   };
   const updateStatus=async(orderNumber,newStatus)=>{
-    try{const r=await fetch(`${API}/admin/orders/${orderNumber}/status`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({status:newStatus})});const d=await r.json();if(!d.success) throw new Error(d.error?.message);if(selected&&selected.orderNumber===orderNumber) setSelected({...selected,status:newStatus});fetchOrders()}catch(e){alert(e.message)}
+    try{
+      const r=await fetch(`${API}/admin/orders/${orderNumber}/status`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({status:newStatus})});
+      const text=await r.text(); let d; try{ d=JSON.parse(text)}catch{ throw new Error(text || `Server returned ${r.status}`)}
+      if(!r.ok || !d.success) throw new Error(d.error?.message || `Failed (${r.status})`);
+      if(selected&&selected.orderNumber===orderNumber) setSelected({...selected,status:newStatus});fetchOrders()
+    }catch(e){alert(e.message)}
   };
   if(!token||!user||(user.role!=='ADMIN'&&user.role!=='SUPER_ADMIN')){
     return <div className="container section" style={{maxWidth:440}}><h1 className="text-3xl font-black mb-2">ADMIN LOGIN</h1><p className="text-sm text-gray mb-6" style={{textTransform:'none'}}>Sign in to view all orders. Separate admin link: <code>/admin</code></p>{error&&<div style={{background:'#F8D7DA',color:'#721C24',padding:'0.75rem',borderRadius:8,marginBottom:12,fontSize:'0.85rem'}}>{error}</div>}<form onSubmit={handleLogin} className="flex flex-col gap-sm"><input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" style={{padding:'0.9rem',border:'1px solid #ddd',borderRadius:10}}/><input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" style={{padding:'0.9rem',border:'1px solid #ddd',borderRadius:10}}/><button className="btn" style={{padding:'1rem'}}>SIGN IN AS ADMIN</button></form></div>
