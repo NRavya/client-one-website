@@ -1,18 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { API } from '../utils/api';
+import { load } from '@cashfreepayments/cashfree-js';
 
 const inputStyle = { width:'100%', padding:'0.9rem 1rem', border:'1px solid var(--color-border)', borderRadius:'8px', fontFamily:'inherit', fontSize:'0.95rem' };
-
-function loadCashfree(mode) {
-  return new Promise((resolve, reject) => {
-    if (window.Cashfree) return resolve(window.Cashfree({ mode }));
-    const s = document.createElement('script');
-    s.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-    s.onload = () => resolve(window.Cashfree({ mode }));
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
 
 export default function CheckoutForm({ items, onSuccess }) {
   const user = JSON.parse(localStorage.getItem('eskraft-user') || 'null');
@@ -32,39 +22,94 @@ export default function CheckoutForm({ items, onSuccess }) {
 
   const handlePay = async (e) => {
     e.preventDefault();
+
     const token = localStorage.getItem('eskraft-token');
-    if (!token) { setMsg('Please sign in via Account first'); return; }
-    if (!form.name || !form.email || !form.phone) { setMsg('Name, email and phone required'); return; }
-    setLoading(true); setMsg('');
+
+    if (!token) {
+      setMsg('Please sign in via Account first');
+      return;
+    }
+
+    if (!form.name || !form.email || !form.phone) {
+      setMsg('Name, email and phone required');
+      return;
+    }
+
+    setLoading(true);
+    setMsg('');
+
     try {
       const res = await fetch(`${API}/orders`, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
-        body: JSON.stringify({ items: items.map(i=>({ productId:i.slug||i.id, quantity:i.quantity })), customerDetails: form })
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          items: items.map(i => ({
+            productId: i.slug || i.id,
+            quantity: i.quantity
+          })),
+          customerDetails: form
+        })
       });
+
       const data = await res.json();
+
       if (!data.success) {
-        if (data.error?.code === 'NOT_AUTHORIZED' || data.error?.message?.includes('token failed')) {
-          localStorage.removeItem('eskraft-token'); localStorage.removeItem('eskraft-user');
-          throw new Error('Session expired - please go to Account and Sign In again, then retry payment');
+        if (
+            data.error?.code === 'NOT_AUTHORIZED' ||
+            data.error?.message?.includes('token failed')
+        ) {
+          localStorage.removeItem('eskraft-token');
+          localStorage.removeItem('eskraft-user');
+
+          throw new Error(
+              'Session expired - please go to Account and Sign In again, then retry payment'
+          );
         }
-        throw new Error(data.error?.message);
+
+        throw new Error(data.error?.message || 'Order creation failed');
       }
-      
-      // Test mode: no Cashfree keys -> just show success without real payment
+
       if (data.data.cashfree?.payment_session_id) {
-        const cf = await loadCashfree((import.meta.env.VITE_CASHFREE_ENV || 'sandbox').toLowerCase());
-        cf.checkout({ paymentSessionId: data.data.cashfree.payment_session_id, redirectTarget: '_self' });
+        const mode = (
+            import.meta.env.VITE_CASHFREE_ENV || 'sandbox'
+        ).toLowerCase();
+
+        const cashfree = await load({
+          mode: mode === 'production' ? 'production' : 'sandbox'
+        });
+
+        console.log('Cashfree session:', data.data.cashfree.payment_session_id);
+
+        const checkoutResult = await cashfree.checkout({
+          paymentSessionId: data.data.cashfree.payment_session_id,
+          redirectTarget: '_self'
+        });
+
+        console.log('Cashfree checkout result:', checkoutResult);
+
       } else if (data.data.cashfree?.payment_link) {
         window.location.href = data.data.cashfree.payment_link;
-      } else {
-        setMsg(`✓ Test Order ${data.data.orderNumber} created! (Cashfree not configured - no real payment). Total ₹${data.data.total}`);
-        setTimeout(()=> onSuccess?.(), 1500);
-      }
-    } catch (err) { setMsg(err.message||'Checkout failed'); }
-    finally { setLoading(false); }
-  };
 
+      } else {
+        setMsg(
+            `✓ Test Order ${data.data.orderNumber} created! ` +
+            `(Cashfree not configured - no real payment). ` +
+            `Total ₹${data.data.total}`
+        );
+
+        setTimeout(() => onSuccess?.(), 1500);
+      }
+
+    } catch (err) {
+      setMsg(err.message || 'Checkout failed');
+
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <form onSubmit={handlePay} className="flex flex-col gap-sm">
       <h3 className="font-black">Shipping Details (auto-filled)</h3>
