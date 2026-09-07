@@ -68,7 +68,6 @@ const Layout = () => {
           <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="*" element={<NotFound />} />
-          <Route path="/thank-you" element={<ThankYou />}  />
         </Routes>
       </main>
       <Footer />
