@@ -1,6 +1,6 @@
 const express = require('express');
 const { protect, admin } = require('../middleware/authMiddleware');
-const { getAllOrders, updateOrderStatus } = require('../controllers/orderController');
+const { getAllOrders, updateOrderStatus, deleteOrder } = require('../controllers/orderController');
 const prisma = require('../config/prisma');
 const router = express.Router();
 router.use(protect, admin);
@@ -13,6 +13,7 @@ router.get('/orders/:id', async (req,res)=>{
   res.json({success:true, data:order});
 });
 router.patch('/orders/:id/status', updateOrderStatus);
+router.delete('/orders/:id', deleteOrder);
 router.get('/customers', async (req,res)=>{
   const customers = await prisma.customer.findMany({ include:{ user:{select:{role:true}}}, orderBy:{createdAt:'desc'}});
   res.json({success:true, data:customers});

@@ -19,8 +19,10 @@ import ShippingReturns from './pages/ShippingReturns';
 import Contact from './pages/Contact';
 import Faq from './pages/Faq';
 import Terms from './pages/Terms';
+import WhyNoCod from './pages/WhyNoCod';
 import PaymentStatus from './pages/PaymentStatus';
 import NotFound from './pages/NotFound';
+import ThankYou from './pages/ThankYou';
 
 const ScrollToTop = () => {
   const { pathname, search } = useLocation();
@@ -61,8 +63,12 @@ const Layout = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/why-no-cod" element={<WhyNoCod />} />
+          <Route path="/why-we-dont-offer-cod" element={<WhyNoCod />} />
+          <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/thank-you" element={<ThankYou />}  />
         </Routes>
       </main>
       <Footer />

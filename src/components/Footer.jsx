@@ -41,6 +41,7 @@ const Footer = () => {
             <div className="flex flex-col gap-xs">
               <Link to="/faq" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>FAQ</Link>
               <Link to="/shipping-returns" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Shipping & Returns</Link>
+              <Link to="/why-no-cod" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Why We Don&apos;t Offer COD</Link>
               <Link to="/contact" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Contact Us</Link>
 
             </div>
@@ -71,11 +72,12 @@ const Footer = () => {
 
         {/* Links */}
         <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }} className="md:flex-row md:justify-between">
-          <div className="flex gap-sm text-xs" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+          <div className="flex gap-sm text-xs" style={{ color: 'rgba(255, 255, 255, 0.5)', flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link to="/terms">Terms & Conditions</Link>
             <Link to="/shipping-returns">Shipping & Returns</Link>
             <Link to="/faq">FAQ</Link>
             <Link to="/custom-orders">Custom Orders</Link>
+            <Link to="/why-no-cod">Why We Don&apos;t Offer COD</Link>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API } from '../utils/api';
+import { MIN_ORDER_VALUE } from '../context/CartContext';
 import { load } from '@cashfreepayments/cashfree-js';
 
 const inputStyle = { width:'100%', padding:'0.9rem 1rem', border:'1px solid var(--color-border)', borderRadius:'8px', fontFamily:'inherit', fontSize:'0.95rem' };
@@ -20,6 +21,8 @@ export default function CheckoutForm({ items, onSuccess }) {
       }).catch(()=>{});
   }, []);
 
+  const cartSubtotal = items.reduce((s, i) => s + i.quantity * i.price, 0);
+
   const handlePay = async (e) => {
     e.preventDefault();
 
@@ -27,6 +30,11 @@ export default function CheckoutForm({ items, onSuccess }) {
 
     if (!token) {
       setMsg('Please sign in via Account first');
+      return;
+    }
+
+    if (cartSubtotal < MIN_ORDER_VALUE) {
+      setMsg(`Minimum order is ₹${MIN_ORDER_VALUE}. Your cart is ₹${cartSubtotal} — please add ₹${MIN_ORDER_VALUE - cartSubtotal} more.`);
       return;
     }
 

@@ -1,5 +1,5 @@
 const prisma = require('../config/prisma');
-const { createCashfreeOrder } = require('../services/cashfree');
+const { createCashfreeOrder, verifyCashfreePayment } = require('../services/cashfree');
 
 const createOrder = async (req, res) => {
   try {
@@ -38,6 +38,10 @@ const createOrder = async (req, res) => {
         const itemSubtotal = product.price * item.quantity;
         subtotal += itemSubtotal;
         orderItemsData.push({ productId: product.id, product_code: product.product_code, product_name: product.product_name, quantity: item.quantity, unitPrice: product.price, subtotal: itemSubtotal });
+      }
+      // Minimum order value — orders above ₹200 only (subtotal before shipping)
+      if (subtotal < 200) {
+        throw Object.assign(new Error(`Minimum order value is ₹200. Your cart subtotal is ₹${subtotal}. Please add more items.`), { code: 'MINIMUM_ORDER' });
       }
       const shippingFee = subtotal > 750 ? 0 : 60;
       const total = subtotal + shippingFee;
@@ -113,6 +117,7 @@ const createOrder = async (req, res) => {
   } catch (error) {
     if (error.code === 'PRODUCT_NOT_FOUND') return res.status(404).json({ success: false, error: { code: 'PRODUCT_NOT_FOUND', message: error.message } });
     if (error.code === 'OUT_OF_STOCK') return res.status(400).json({ success: false, error: { code: 'OUT_OF_STOCK', message: error.message } });
+    if (error.code === 'MINIMUM_ORDER') return res.status(400).json({ success: false, error: { code: 'MINIMUM_ORDER', message: error.message } });
     console.error(error);
     res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Internal server error' } });
   }
@@ -139,8 +144,8 @@ const getAllOrders = async (req, res) => {
     const { status, search, page=1, limit=20 } = req.query;
     const where = {};
     if (status) where.status = status;
-    if (search) where.OR = [{ orderNumber: { contains: search, mode:'insensitive' } }, { customer: { name: { contains: search, mode:'insensitive' } } }];
-    const orders = await prisma.order.findMany({ where, include: { items: { include: { product: true } }, customer: true }, orderBy: { createdAt: 'desc' }, skip: (Number(page)-1)*Number(limit), take: Number(limit) });
+    if (search) where.OR = [{ orderNumber: { contains: search, mode:'insensitive' } }, { customer: { name: { contains: search, mode:'insensitive' } } }, { customer: { email: { contains: search, mode:'insensitive' } } }];
+    const orders = await prisma.order.findMany({ where, include: { items: { include: { product: true } }, customer: true, payments: true }, orderBy: { createdAt: 'desc' }, skip: (Number(page)-1)*Number(limit), take: Number(limit) });
     const total = await prisma.order.count({ where });
     res.json({ success: true, data: { orders, total, page: Number(page), limit: Number(limit) } });
   } catch (e) { console.error(e); res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Internal server error' } }); }
@@ -157,4 +162,64 @@ const updateOrderStatus = async (req, res) => {
     res.json({ success: true, data: updated });
   } catch (e) { res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Internal server error' } }); }
 };
-module.exports = { createOrder, getMyOrders, getOrderById, getAllOrders, updateOrderStatus };
+const verifyPayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let order = await prisma.order.findUnique({
+      where: { orderNumber: id },
+      include: { items: { include: { product: true } }, customer: true, payments: true },
+    });
+    if (!order) order = await prisma.order.findUnique({ where: { id }, include: { items: { include: { product: true } }, customer: true, payments: true } });
+    if (!order) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found' } });
+    if (order.customerId !== req.user.customerId && req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN') return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Access denied' } });
+    if (order.paymentStatus === 'SUCCESS' || order.status === 'PROCESSING' || order.status === 'PAID') return res.json({ success: true, data: order, verified: true });
+    const cashfreePayments = await verifyCashfreePayment(order.orderNumber);
+    const payments = Array.isArray(cashfreePayments) ? cashfreePayments : cashfreePayments?.data || [];
+    const successfulPayment = payments.find((p) => String(p.payment_status || '').toUpperCase() === 'SUCCESS');
+    if (successfulPayment) {
+      await prisma.$transaction(async (tx) => {
+        await tx.payment.updateMany({ where: { orderId: order.id }, data: { status: 'SUCCESS', providerPaymentId: String(successfulPayment.cf_payment_id) } });
+        await tx.order.update({ where: { id: order.id }, data: { paymentStatus: 'SUCCESS', status: 'PROCESSING' } });
+      });
+      const updatedOrder = await prisma.order.findUnique({ where: { id: order.id }, include: { items: { include: { product: true } }, customer: true, payments: true } });
+      return res.json({ success: true, verified: true, data: updatedOrder });
+    }
+    return res.json({ success: true, verified: false, data: order, message: 'Payment is still being processed.' });
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    res.status(502).json({ success: false, error: { code: 'PAYMENT_VERIFICATION_FAILED', message: 'Unable to verify payment right now.' } });
+  }
+};
+const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let order = await prisma.order.findUnique({ where: { orderNumber: id }, include: { items: true, payments: true } });
+    if (!order) order = await prisma.order.findUnique({ where: { id }, include: { items: true, payments: true } });
+    if (!order) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found' } });
+    if (req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Admin access required' } });
+    }
+    await prisma.$transaction(async (tx) => {
+      const shouldRestore = !['FAILED', 'CANCELLED', 'REFUNDED'].includes(order.status);
+      if (shouldRestore && order.items.length > 0) {
+        await Promise.all(
+          order.items.map((it) =>
+            tx.product.update({ where: { id: it.productId }, data: { stock: { increment: it.quantity } } }).catch(() => {})
+          )
+        );
+      }
+      if (order.payments.length > 0) {
+        await tx.payment.deleteMany({ where: { orderId: order.id } });
+      }
+      if (order.items.length > 0) {
+        await tx.orderItem.deleteMany({ where: { orderId: order.id } });
+      }
+      await tx.order.delete({ where: { id: order.id } });
+    });
+    res.json({ success: true, message: 'Order deleted successfully', data: { orderNumber: order.orderNumber, id: order.id } });
+  } catch (e) {
+    console.error('deleteOrder error:', e);
+    res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Failed to delete order' } });
+  }
+};
+module.exports = { createOrder, getMyOrders, getOrderById, getAllOrders, updateOrderStatus, verifyPayment, deleteOrder };

@@ -5,6 +5,9 @@ const CartContext = createContext(null);
 
 const STORAGE_KEY = 'eskraft-cart';
 
+// Minimum order value (subtotal) — orders above ₹200 only
+export const MIN_ORDER_VALUE = 200;
+
 const loadCart = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);

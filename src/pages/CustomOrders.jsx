@@ -52,13 +52,55 @@ const CustomOrders = () => {
     addFiles(e.dataTransfer.files);
   };
 
-  const handleSubmit = (e) => {
+  // Downscale to max 800px + JPEG 0.7 so 3 images fit in localStorage (~5MB quota)
+  const fileToDataUrl = (file) => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const MAX = 800;
+          let { width, height } = img;
+          const scale = Math.min(1, MAX / Math.max(width, height));
+          width = Math.round(width * scale); height = Math.round(height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        } catch { resolve(reader.result); }
+      };
+      img.onerror = () => resolve(reader.result);
+      img.src = reader.result;
+    };
+    reader.onerror = () => resolve(null);
+    reader.readAsDataURL(file);
+  });
+
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try{
+      // Persist actual image data (not just count) so Admin can view them
+      const images = (await Promise.all(refImages.map(fileToDataUrl))).filter(Boolean);
       const arr=JSON.parse(localStorage.getItem('eskraft-custom-orders')||'[]');
-      arr.unshift({id:`CR-${Date.now().toString().slice(-6)}`,name:form.name,contact:form.contact,type:form.type,details:form.details,refs:refImages.length,createdAt:new Date().toISOString(),status:'pending'});
-      localStorage.setItem('eskraft-custom-orders',JSON.stringify(arr));
+      const entry={id:`CR-${Date.now().toString().slice(-6)}`,name:form.name,contact:form.contact,type:form.type,details:form.details,refs:images.length,images,createdAt:new Date().toISOString(),status:'pending'};
+      arr.unshift(entry);
+      try {
+        localStorage.setItem('eskraft-custom-orders',JSON.stringify(arr));
+      } catch (quotaErr) {
+        // Quota fallback: keep newest entry but drop oldest images first, then drop new images if still full
+        try {
+          const slim = arr.map((o,i)=> i===0 ? o : ({...o, images: o.images?.slice(0,1)}));
+          localStorage.setItem('eskraft-custom-orders',JSON.stringify(slim));
+        } catch {
+          entry.images = []; entry.refs = 0;
+          localStorage.setItem('eskraft-custom-orders',JSON.stringify([entry, ...JSON.parse(localStorage.getItem('eskraft-custom-orders')||'[]')].slice(0,20)));
+        }
+      }
     }catch{}
+    setSaving(false);
     setSent(true);
   };
 
@@ -229,7 +271,7 @@ const CustomOrders = () => {
               )}
             </div>
 
-            <button type="submit" className="btn btn-accent" style={{ marginTop: '1rem' }}>SEND MY REQUEST</button>
+            <button type="submit" className="btn btn-accent" disabled={saving} style={{ marginTop: '1rem', opacity: saving?0.6:1 }}>{saving?'SAVING IMAGES…':'SEND MY REQUEST'}</button>
           </form>
         )}
       </section>

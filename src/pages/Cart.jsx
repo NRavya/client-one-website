@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/useCart';
+import { MIN_ORDER_VALUE } from '../context/CartContext';
 import CheckoutForm from '../components/CheckoutForm';
 
 const Cart = () => {
@@ -10,6 +11,9 @@ const Cart = () => {
   const [checkoutMsg, setCheckoutMsg] = React.useState('');
 
   const shipping = subtotal > 750 ? 0 : 60;
+  const meetsMinimum = subtotal >= MIN_ORDER_VALUE;
+  const amountNeeded = Math.max(0, MIN_ORDER_VALUE - subtotal);
+  const minProgress = Math.min((subtotal / MIN_ORDER_VALUE) * 100, 100);
 
   if (items.length === 0) {
     return (
@@ -72,6 +76,21 @@ const Cart = () => {
         <aside className="flex flex-col gap-md" style={{ border: '1px solid var(--color-border)', borderRadius: '16px', padding: '2rem', position: 'sticky', top: '120px' }}>
           <h2 className="text-xl font-black">ORDER SUMMARY</h2>
 
+          {/* Minimum order progress — orders above ₹200 only */}
+          <div style={{ background: meetsMinimum ? '#D4EDDA' : '#FFF6E8', border: meetsMinimum ? '1px solid #A3D9A5' : '1px solid #F0D9B5', borderRadius: '10px', padding: '0.85rem 1rem' }}>
+            <p style={{ fontSize: '0.82rem', fontWeight: 800, color: meetsMinimum ? '#155724' : '#8B6A2E', textTransform: 'none' }}>
+              {meetsMinimum ? `✓ Minimum order met (above ₹${MIN_ORDER_VALUE})` : `Add ₹${amountNeeded} more to place your order (min ₹${MIN_ORDER_VALUE})`}
+            </p>
+            <div style={{ height: 6, borderRadius: 999, background: 'rgba(0,0,0,0.08)', marginTop: '0.5rem', overflow: 'hidden' }}>
+              <div style={{ width: `${minProgress}%`, height: '100%', borderRadius: 999, background: meetsMinimum ? '#28A745' : '#D1A54A', transition: 'width 0.3s ease' }} />
+            </div>
+            {!meetsMinimum && (
+              <Link to="/category/all" style={{ display: 'inline-block', marginTop: '0.6rem', fontSize: '0.8rem', fontWeight: 800, textDecoration: 'underline', color: '#111' }}>
+                + Add more products
+              </Link>
+            )}
+          </div>
+
           <div className="flex flex-col gap-xs text-sm">
             <div className="flex justify-between">
               <span className="text-gray">Subtotal</span>
@@ -88,15 +107,21 @@ const Cart = () => {
           </div>
 
           {!showCheckout ? (
-            <button type="button" onClick={() => {
+            <button type="button" disabled={!meetsMinimum} title={meetsMinimum ? 'Proceed to checkout' : `Minimum order ₹${MIN_ORDER_VALUE} — add ₹${amountNeeded} more`} onClick={() => {
               const token = localStorage.getItem('eskraft-token');
               if (!token) { setCheckoutMsg('Please sign in via Account to place order'); return; }
+              if (subtotal < MIN_ORDER_VALUE) { setCheckoutMsg(`Minimum order is ₹${MIN_ORDER_VALUE}. Please add ₹${MIN_ORDER_VALUE - subtotal} more to checkout.`); return; }
+              setCheckoutMsg('');
               setShowCheckout(true);
-            }} className="btn btn-accent" style={{ padding: '1.25rem' }}>
-              PROCEED TO CHECKOUT
+            }} className="btn btn-accent" style={{ padding: '1.25rem', opacity: meetsMinimum ? 1 : 0.5, cursor: meetsMinimum ? 'pointer' : 'not-allowed' }}>
+              {meetsMinimum ? 'PROCEED TO CHECKOUT' : `ADD ₹${amountNeeded} MORE TO CHECKOUT`}
             </button>
-          ) : (
+          ) : meetsMinimum ? (
             <CheckoutForm items={items} onSuccess={clearCart} />
+          ) : (
+            <p className="text-sm text-center" style={{ textTransform: 'none', color: '#b91c1c', fontWeight: 700 }}>
+              Minimum order is ₹{MIN_ORDER_VALUE}. <Link to="/category/all" style={{ textDecoration: 'underline' }}>Add more products</Link> to continue.
+            </p>
           )}
 
           {/* Cashfree Payment Form removed - use PAY WITH CASHFREE PG checkout only */}

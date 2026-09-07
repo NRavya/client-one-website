@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, ArrowRight, Lock, Truck, RefreshCcw } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart, MIN_ORDER_VALUE } from '../context/CartContext';
 import productsData from '../data/products.json';
 
 const CartDrawer = () => {
@@ -12,6 +12,9 @@ const CartDrawer = () => {
   const freeShippingThreshold = 1000;
   const progress = Math.min((subtotal / freeShippingThreshold) * 100, 100);
   const amountLeft = freeShippingThreshold - subtotal;
+  const meetsMinimum = subtotal >= MIN_ORDER_VALUE;
+  const minNeeded = Math.max(0, MIN_ORDER_VALUE - subtotal);
+  const minProgress = Math.min((subtotal / MIN_ORDER_VALUE) * 100, 100);
 
   return (
     <>
@@ -95,13 +98,28 @@ const CartDrawer = () => {
         {/* Footer */}
         {items.length > 0 && (
           <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg)' }}>
+            {/* Minimum order nudge — updates live as products are added */}
+            <div style={{ background: meetsMinimum ? '#D4EDDA' : '#FFF6E8', border: meetsMinimum ? '1px solid #A3D9A5' : '1px solid #F0D9B5', borderRadius: 8, padding: '0.6rem 0.8rem', marginBottom: '0.9rem' }}>
+              <p style={{ fontSize: '0.75rem', fontWeight: 800, color: meetsMinimum ? '#155724' : '#8B6A2E' }}>
+                {meetsMinimum ? `✓ Above ₹${MIN_ORDER_VALUE} — ready to checkout` : `Add ₹${minNeeded} more (min order ₹${MIN_ORDER_VALUE})`}
+              </p>
+              <div style={{ height: 5, borderRadius: 999, background: 'rgba(0,0,0,0.08)', marginTop: 6, overflow: 'hidden' }}>
+                <div style={{ width: `${minProgress}%`, height: '100%', background: meetsMinimum ? '#28A745' : '#D1A54A', transition: 'width 0.3s ease' }} />
+              </div>
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
               <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '0.08em' }}>Subtotal</span>
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.25rem' }}>₹{subtotal}</span>
             </div>
-            <Link to="/cart" onClick={closeCart} className="btn w-full" style={{ marginBottom: '0.75rem', justifyContent: 'center', display: 'flex' }}>
-              Checkout <ArrowRight size={16} style={{ marginLeft: 6 }} />
-            </Link>
+            {meetsMinimum ? (
+              <Link to="/cart" onClick={closeCart} className="btn w-full" style={{ marginBottom: '0.75rem', justifyContent: 'center', display: 'flex' }}>
+                Checkout <ArrowRight size={16} style={{ marginLeft: 6 }} />
+              </Link>
+            ) : (
+              <Link to="/cart" onClick={closeCart} className="btn w-full btn-outline" style={{ marginBottom: '0.75rem', justifyContent: 'center', display: 'flex' }}>
+                View Cart — add ₹{minNeeded} more <ArrowRight size={16} style={{ marginLeft: 6 }} />
+              </Link>
+            )}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', color: 'var(--color-gray)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.7rem' }}><Lock size={12} /> Secure</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.7rem' }}><Truck size={12} /> Fast Shipping</span>
