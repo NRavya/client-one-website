@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
-import AnnouncementBar from './components/AnnouncementBar';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import { CartProvider } from './context/CartContext';
@@ -46,7 +45,6 @@ const Layout = () => {
   }
   return (
     <>
-      <AnnouncementBar />
       <Header />
       <main style={{ minHeight: '80vh' }}>
         <Routes>

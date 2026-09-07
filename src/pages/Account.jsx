@@ -50,7 +50,66 @@ const Account = () => {
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
 
+  // Edit Profile / Account Settings
+  const [profile, setProfile] = useState({ name: '', email: '', address: '', currentPassword: '', newPassword: '' });
+  const [profileMsg, setProfileMsg] = useState('');
+  const [profileErr, setProfileErr] = useState('');
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleProfileChange = (e) => setProfile({ ...profile, [e.target.name]: e.target.value });
+
+  const fetchProfile = async (jwt) => {
+    try {
+      const res = await fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${jwt}` } });
+      const data = await res.json();
+      if (data.success) {
+        setProfile((p) => ({
+          ...p,
+          name: data.data.name || '',
+          email: data.data.email || '',
+          address: data.data.customer?.address || '',
+        }));
+        setProfileLoaded(true);
+      }
+    } catch {
+      // silent — profile section keeps local values
+    }
+  };
+
+  const handleProfileSave = async (e) => {
+    e.preventDefault();
+    setProfileMsg('');
+    setProfileErr('');
+    if (!profile.name.trim()) { setProfileErr('Name cannot be empty'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim())) { setProfileErr('Please enter a valid email address'); return; }
+    if (profile.newPassword && profile.newPassword.length < 6) { setProfileErr('New password must be at least 6 characters'); return; }
+    if (profile.newPassword && !profile.currentPassword) { setProfileErr('Enter your current password to set a new one'); return; }
+    setProfileLoading(true);
+    try {
+      const body = { name: profile.name.trim(), email: profile.email.trim(), address: profile.address };
+      if (profile.newPassword) { body.currentPassword = profile.currentPassword; body.newPassword = profile.newPassword; }
+      const res = await fetch(`${API}/auth/me`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!data.success) { setProfileErr(data.error?.message || 'Could not save profile'); return; }
+      // Stay logged in — refresh stored token/user (email may have changed)
+      localStorage.setItem('eskraft-token', data.data.token);
+      localStorage.setItem('eskraft-user', JSON.stringify(data.data.user));
+      setToken(data.data.token);
+      setUser(data.data.user);
+      setProfile((p) => ({ ...p, currentPassword: '', newPassword: '' }));
+      setProfileMsg(data.message || 'Profile updated successfully');
+    } catch {
+      setProfileErr('Could not connect to server');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const fetchOrders = async (jwt) => {
     setLoadingOrders(true);
@@ -68,7 +127,7 @@ const Account = () => {
   };
 
   useEffect(() => {
-    if (token && user) fetchOrders(token);
+    if (token && user) { fetchOrders(token); if (!profileLoaded) fetchProfile(token); }
   }, [token, user]);
 
   const handleAuth = async (e) => {
@@ -176,6 +235,32 @@ const Account = () => {
       </div>
 
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <h2 className="text-2xl font-black mb-4" style={{ fontFamily: 'var(--font-heading)' }}>EDIT PROFILE</h2>
+        <form onSubmit={handleProfileSave} className="flex flex-col gap-sm" style={{ border: '1px solid var(--color-border)', borderRadius: '12px', padding: '1.5rem', marginBottom: '2.5rem' }}>
+          {profileErr && (
+            <div style={{ padding: '0.75rem 1rem', borderRadius: '8px', backgroundColor: '#F8D7DA', color: '#721C24', fontSize: '0.875rem' }}>
+              {profileErr}
+            </div>
+          )}
+          {profileMsg && (
+            <div style={{ padding: '0.75rem 1rem', borderRadius: '8px', backgroundColor: '#D4EDDA', color: '#155724', fontSize: '0.875rem' }}>
+              {profileMsg}
+            </div>
+          )}
+          <label className="font-bold text-sm" htmlFor="profile-name">NAME</label>
+          <input id="profile-name" name="name" value={profile.name} onChange={handleProfileChange} required placeholder="Your name" style={inputStyle} aria-label="Your name" />
+          <label className="font-bold text-sm" htmlFor="profile-email">EMAIL</label>
+          <input id="profile-email" name="email" type="email" value={profile.email} onChange={handleProfileChange} required placeholder="Email" style={inputStyle} aria-label="Email" />
+          <label className="font-bold text-sm" htmlFor="profile-address">ADDRESS</label>
+          <textarea id="profile-address" name="address" value={profile.address} onChange={handleProfileChange} rows={2} placeholder="Delivery address" style={inputStyle} aria-label="Address" />
+          <p className="font-bold text-sm" style={{ marginTop: '0.5rem' }}>CHANGE PASSWORD <span style={{ fontWeight: 400, color: 'var(--color-gray)', textTransform: 'none' }}>(optional)</span></p>
+          <input name="currentPassword" type="password" value={profile.currentPassword} onChange={handleProfileChange} placeholder="Current password" style={inputStyle} aria-label="Current password" autoComplete="current-password" />
+          <input name="newPassword" type="password" value={profile.newPassword} onChange={handleProfileChange} minLength={6} placeholder="New password (min 6 characters)" style={inputStyle} aria-label="New password" autoComplete="new-password" />
+          <button type="submit" className="btn" disabled={profileLoading} style={{ marginTop: '0.5rem' }}>
+            {profileLoading ? 'SAVING...' : 'SAVE CHANGES'}
+          </button>
+        </form>
+
         <h2 className="text-2xl font-black mb-6" style={{ fontFamily: 'var(--font-heading)' }}>YOUR ORDERS</h2>
 
         {loadingOrders ? (
