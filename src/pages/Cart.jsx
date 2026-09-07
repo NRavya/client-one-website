@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/useCart';
 import { MIN_ORDER_VALUE } from '../context/CartContext';
+import { getDeliveryFee } from '../utils/shipping';
 import CheckoutForm from '../components/CheckoutForm';
 
 const Cart = () => {
@@ -10,7 +11,8 @@ const Cart = () => {
   const [showCheckout, setShowCheckout] = React.useState(false);
   const [checkoutMsg, setCheckoutMsg] = React.useState('');
 
-  const shipping = subtotal > 750 ? 0 : 60;
+  // Shared slab: ₹200–349 → ₹70 | ₹350–699 → ₹35 | ₹700+ → FREE; null below ₹200
+  const shipping = getDeliveryFee(subtotal);
   const meetsMinimum = subtotal >= MIN_ORDER_VALUE;
   const amountNeeded = Math.max(0, MIN_ORDER_VALUE - subtotal);
   const minProgress = Math.min((subtotal / MIN_ORDER_VALUE) * 100, 100);
@@ -44,7 +46,15 @@ const Cart = () => {
                 <Link to={`/product/${item.slug}`}>
                   <h3 className="font-bold" style={{ textTransform: 'none' }}>{item.product_name || item.name}</h3>
                 </Link>
-                <span className="text-lg font-black">₹{item.price}</span>
+                {item.mrp !== undefined && Number(item.mrp) > Number(item.price) ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className="text-lg font-black">₹{item.price}</span>
+                    <span style={{ textDecoration: 'line-through', color: 'var(--color-gray)', fontSize: '0.9rem' }}>₹{item.mrp}</span>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#15803D' }}>10% OFF</span>
+                  </span>
+                ) : (
+                  <span className="text-lg font-black">₹{item.price}</span>
+                )}
               </div>
               <div className="flex flex-col items-end gap-xs">
                 <div className="flex items-center" style={{ border: '1px solid var(--color-border)', borderRadius: '8px' }}>
@@ -92,18 +102,27 @@ const Cart = () => {
           </div>
 
           <div className="flex flex-col gap-xs text-sm">
+            {items.some((i) => i.mrp !== undefined && Number(i.mrp) > Number(i.price)) && (
+              <div className="flex justify-between" style={{ color: '#15803D', fontWeight: 800 }}>
+                <span>Discount (10% frames)</span>
+                <span>−₹{items.reduce((s, i) => s + (i.mrp !== undefined && Number(i.mrp) > Number(i.price) ? (Number(i.mrp) - Number(i.price)) * i.quantity : 0), 0)}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-gray">Subtotal</span>
               <span className="font-bold">₹{subtotal}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray">Shipping</span>
-              <span className="font-bold">{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
+              <span className="text-gray">Delivery</span>
+              <span className="font-bold">{shipping === null ? '—' : shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
             </div>
             <div className="flex justify-between text-base" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
               <span className="font-black">TOTAL</span>
-              <span className="font-black">₹{subtotal + shipping}</span>
+              <span className="font-black">₹{shipping === null ? subtotal : subtotal + shipping}</span>
             </div>
+            <p className="text-xs text-gray" style={{ textTransform: 'none' }}>
+              {shipping === 0 ? 'You’ve unlocked FREE delivery on ₹700+ 🎉' : shipping !== null ? `Add ₹${700 - subtotal} more for FREE delivery` : `Delivery calculated from ₹200 onwards`}
+            </p>
           </div>
 
           {!showCheckout ? (

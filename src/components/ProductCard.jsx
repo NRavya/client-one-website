@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import { useCart } from '../context/useCart';
+import { priceInfo } from '../utils/discount';
 
 const badgeClass = (badge) => {
   if (badge === 'NEW') return 'badge-new';
@@ -12,6 +13,7 @@ const badgeClass = (badge) => {
 const ProductCard = ({ product, showCode = false }) => {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
+  const { mrp, price, discounted, percent } = priceInfo(product);
 
   const handleQuickAdd = (e) => {
     e.preventDefault();
@@ -29,7 +31,17 @@ const ProductCard = ({ product, showCode = false }) => {
           loading="lazy"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-        {product.badge && product.badge !== 'NEW' && (
+        {discounted && (
+          <span className="badge" style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: '#B91C1C' }}>
+            {percent}% OFF
+          </span>
+        )}
+        {discounted && product.badge === 'SALE' && (
+          <span className="badge" style={{ position: 'absolute', top: '44px', left: '12px' }}>
+            SALE
+          </span>
+        )}
+        {!discounted && product.badge && product.badge !== 'NEW' && (
           <span className={`badge ${badgeClass(product.badge)}`} style={{ position: 'absolute', top: '12px', left: '12px' }}>
             {product.badge}
           </span>
@@ -48,7 +60,15 @@ const ProductCard = ({ product, showCode = false }) => {
           <h3 className="font-bold" style={{ fontSize: '1.05rem', lineHeight: 1.2 }}>{product.product_name || product.name}</h3>
         )}
         <div className="flex items-center gap-sm">
-          <span className="text-lg font-black">₹{product.price}</span>
+          {discounted ? (
+            <>
+              <span className="text-lg font-black">₹{price}</span>
+              <span style={{ textDecoration: 'line-through', color: 'var(--color-gray)', fontSize: '0.9rem' }}>₹{mrp}</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#15803D' }}>SAVE ₹{mrp - price}</span>
+            </>
+          ) : (
+            <span className="text-lg font-black">₹{product.price}</span>
+          )}
         </div>
       </div>
       <button

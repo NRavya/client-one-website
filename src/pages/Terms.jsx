@@ -23,7 +23,7 @@ const Terms = () => {
 
         <section>
           <h2 className="font-bold text-lg mb-2">4. Shipping & Delivery</h2>
-          <p>ESKraft delivers across India via DTDC or personally near Chennai. Delivery timelines vary by location, and shipping charges apply for orders ₹200 to ₹750 and <strong>FREE DELIVERY</strong> above ₹750. ESKraft is responsible for personally delivered parcels; for DTDC deliveries, the courier is responsible once the parcel is dispatched. You will get a notification regarding the delivery type.</p>
+          <p>ESKraft delivers across India via DTDC or personally near Chennai. Delivery timelines vary by location, and delivery charges are based on the order subtotal before delivery: ₹200–₹349 → ₹70, ₹350–₹699 → ₹35, and <strong>FREE DELIVERY</strong> on ₹700 and above. ESKraft is responsible for personally delivered parcels; for DTDC deliveries, the courier is responsible once the parcel is dispatched. You will get a notification regarding the delivery type.</p>
         </section>
 
         <section>

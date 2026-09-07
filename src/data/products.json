@@ -687,7 +687,7 @@
       "/assets/ESKFRM0003 - Zen Temple.JPG"
     ],
     "stock": 20,
-    "badge": null,
+    "badge": "SALE",
     "rating": 4.8,
     "reviews": 81,
     "tags": [
@@ -715,7 +715,7 @@
       "/assets/ESKFRM0004 - Zen Temple.JPG"
     ],
     "stock": 20,
-    "badge": null,
+    "badge": "SALE",
     "rating": 4.8,
     "reviews": 57,
     "tags": [
@@ -743,7 +743,7 @@
       "/assets/ESKFRM0005 - Japanese Quotes.JPG"
     ],
     "stock": 20,
-    "badge": "NEW",
+    "badge": "SALE",
     "rating": 4.8,
     "reviews": 108,
     "tags": [
@@ -1250,8 +1250,8 @@
     "slug": "eskfrm0006",
     "name": "Odyssey",
     "description": "Premium handcrafted Odyssey. Handcrafted with precision and care.",
-    "price": 680,
-    "compareAtPrice": 800,
+    "price": 800,
+    "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Odyssey",
     "category": "Frames",
     "type": "Wall Decor",
@@ -1259,7 +1259,7 @@
       "/assets/ESKFRM0006 - Odyssey.png"
     ],
     "stock": 20,
-    "badge": "SALE",
+    "badge": null,
     "rating": 4.8,
     "reviews": 50,
     "tags": [
@@ -1278,8 +1278,8 @@
     "slug": "eskfrm0007",
     "name": "Achilles",
     "description": "Premium handcrafted Achilles. Handcrafted with precision and care.",
-    "price": 680,
-    "compareAtPrice": 800,
+    "price": 800,
+    "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Achilles",
     "category": "Frames",
     "type": "Wall Decor",
@@ -1287,7 +1287,7 @@
       "/assets/ESKFRM0007 - Achilles.png"
     ],
     "stock": 20,
-    "badge": "SALE",
+    "badge": null,
     "rating": 4.8,
     "reviews": 50,
     "tags": [
@@ -1306,8 +1306,8 @@
     "slug": "eskfrm0008",
     "name": "Odyssey 02",
     "description": "Premium handcrafted Odyssey 02. Handcrafted with precision and care.",
-    "price": 680,
-    "compareAtPrice": 800,
+    "price": 800,
+    "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Odyssey 02",
     "category": "Frames",
     "type": "Wall Decor",
@@ -1315,7 +1315,7 @@
       "/assets/ESKFRM0008 - Odyssey 02.png"
     ],
     "stock": 20,
-    "badge": "SALE",
+    "badge": null,
     "rating": 4.8,
     "reviews": 50,
     "tags": [

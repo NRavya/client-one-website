@@ -2,6 +2,7 @@ import React from 'react';
 import { X, ArrowRight, Lock, Truck, RefreshCcw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart, MIN_ORDER_VALUE } from '../context/CartContext';
+import { FREE_DELIVERY_THRESHOLD, getDeliveryFee } from '../utils/shipping';
 import productsData from '../data/products.json';
 
 const CartDrawer = () => {
@@ -9,9 +10,10 @@ const CartDrawer = () => {
 
   if (!isCartOpen) return null;
 
-  const freeShippingThreshold = 1000;
+  const freeShippingThreshold = FREE_DELIVERY_THRESHOLD;
   const progress = Math.min((subtotal / freeShippingThreshold) * 100, 100);
   const amountLeft = freeShippingThreshold - subtotal;
+  const deliveryFee = getDeliveryFee(subtotal);
   const meetsMinimum = subtotal >= MIN_ORDER_VALUE;
   const minNeeded = Math.max(0, MIN_ORDER_VALUE - subtotal);
   const minProgress = Math.min((subtotal / MIN_ORDER_VALUE) * 100, 100);
@@ -63,7 +65,15 @@ const CartDrawer = () => {
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <p style={{ fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.3, marginBottom: '0.25rem' }}>{item.name}</p>
-                    <p style={{ color: 'var(--color-wood-dark)', fontWeight: 700, fontSize: '0.95rem' }}>₹{item.price}</p>
+                    {item.mrp !== undefined && Number(item.mrp) > Number(item.price) ? (
+                      <p style={{ fontWeight: 700, fontSize: '0.95rem' }}>
+                        <span style={{ color: 'var(--color-wood-dark)' }}>₹{item.price}</span>{' '}
+                        <span style={{ textDecoration: 'line-through', color: 'var(--color-gray)', fontSize: '0.8rem', fontWeight: 400 }}>₹{item.mrp}</span>{' '}
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#15803D' }}>10% OFF</span>
+                      </p>
+                    ) : (
+                      <p style={{ color: 'var(--color-wood-dark)', fontWeight: 700, fontSize: '0.95rem' }}>₹{item.price}</p>
+                    )}
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', border: '1px solid var(--color-border)', borderRadius: 6, overflow: 'hidden' }}>
@@ -107,9 +117,17 @@ const CartDrawer = () => {
                 <div style={{ width: `${minProgress}%`, height: '100%', background: meetsMinimum ? '#28A745' : '#D1A54A', transition: 'width 0.3s ease' }} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
               <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '0.08em' }}>Subtotal</span>
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.25rem' }}>₹{subtotal}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+              <span style={{ fontSize: '0.78rem', color: 'var(--color-gray)' }}>Delivery</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 800 }}>{deliveryFee === null ? '—' : deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '0.08em' }}>Total</span>
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.25rem' }}>₹{deliveryFee === null ? subtotal : subtotal + deliveryFee}</span>
             </div>
             {meetsMinimum ? (
               <Link to="/cart" onClick={closeCart} className="btn w-full" style={{ marginBottom: '0.75rem', justifyContent: 'center', display: 'flex' }}>

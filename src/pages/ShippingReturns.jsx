@@ -13,9 +13,10 @@ const ShippingReturns = () => (
           <li>We deliver all across India, using National Courier services (eg: DTDC etc..) for most locations. For areas near Chennai, we may deliver personally. Once your order is shipped via National Courier services, you will be notified through WhatsApp.</li>
           <li>Orders typically take 2-3 business days to process.</li>
           <li>Once online payment has been received from Cashfree Merchant, product(s) will be packed and shipped either through DTDC or by ESKraft.</li>
-          <li><strong>Shipping rate applies as follows:</strong></li>
-          <li>1. Shipping rate applies to products ranging from ₹200 - ₹750.</li>
-          <li>2. Orders above ₹750 have <strong>FREE DELIVERY</strong>.</li>
+          <li><strong>Delivery charges (on order subtotal before delivery):</strong></li>
+          <li>1. Subtotal ₹200–₹349 → delivery charge <strong>₹70</strong>.</li>
+          <li>2. Subtotal ₹350–₹699 → delivery charge <strong>₹35</strong>.</li>
+          <li>3. Subtotal ₹700 or above → <strong>FREE DELIVERY</strong>.</li>
           <li>ESKraft is responsible for parcels we deliver personally. For shipments via National Courier services, the courier company is responsible once delivery is notified.</li>
         </ul>
       </section>

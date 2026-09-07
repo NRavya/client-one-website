@@ -1,5 +1,7 @@
 const prisma = require('../config/prisma');
 const { createCashfreeOrder, verifyCashfreePayment } = require('../services/cashfree');
+const { getDeliveryFee } = require('../utils/shipping');
+const { getSalePrice } = require('../utils/discount');
 
 const createOrder = async (req, res) => {
   try {
@@ -35,15 +37,18 @@ const createOrder = async (req, res) => {
         if (product.stock < item.quantity) {
           throw Object.assign(new Error(`Insufficient stock for ${product.name}`), { code: 'OUT_OF_STOCK' });
         }
-        const itemSubtotal = product.price * item.quantity;
+        // 10% off on the three discounted frames only — same list as frontend utils/discount.js
+        const unitPrice = getSalePrice(product, product.price);
+        const itemSubtotal = unitPrice * item.quantity;
         subtotal += itemSubtotal;
-        orderItemsData.push({ productId: product.id, product_code: product.product_code, product_name: product.product_name, quantity: item.quantity, unitPrice: product.price, subtotal: itemSubtotal });
+        orderItemsData.push({ productId: product.id, product_code: product.product_code, product_name: product.product_name, quantity: item.quantity, unitPrice, subtotal: itemSubtotal });
       }
       // Minimum order value — orders above ₹200 only (subtotal before shipping)
       if (subtotal < 200) {
         throw Object.assign(new Error(`Minimum order value is ₹200. Your cart subtotal is ₹${subtotal}. Please add more items.`), { code: 'MINIMUM_ORDER' });
       }
-      const shippingFee = subtotal > 750 ? 0 : 60;
+      // Shared slab (subtotal BEFORE delivery): ₹200–349 → ₹70 | ₹350–699 → ₹35 | ₹700+ → FREE
+      const shippingFee = getDeliveryFee(subtotal);
       const total = subtotal + shippingFee;
       const orderNumber = `ESK-${Date.now()}-${Math.floor(Math.random() * 900 + 100)}`;
 

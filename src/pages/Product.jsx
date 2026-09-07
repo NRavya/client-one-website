@@ -4,6 +4,7 @@ import { ShieldCheck, Truck, RotateCcw, Check, ChevronLeft, ChevronRight } from 
 import productsData from '../data/products.json';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/useCart';
+import { priceInfo } from '../utils/discount';
 
 const FRAME_SIZES = [
   { label: '9×12 inches', price: 800 },
@@ -18,7 +19,10 @@ const Product = () => {
 
   const isFrame = product?.category === 'Frames';
   const [selectedSize, setSelectedSize] = useState(FRAME_SIZES[0]);
-  const displayPrice = isFrame ? selectedSize.price : product?.price;
+  const baseDisplay = isFrame ? selectedSize.price : product?.price;
+  // 10% off applies to the three discounted frames (any size)
+  const sale = priceInfo(product, baseDisplay);
+  const displayPrice = sale.price;
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -49,7 +53,7 @@ const Product = () => {
   const suggestions = related.length > 0 ? related : fallbackRelated.slice(0, 3);
 
   const handleAddToCart = () => {
-    const item = isFrame ? { ...product, price: displayPrice, name: `${product.name} (${selectedSize.label})`, selectedSize: selectedSize.label } : product;
+    const item = isFrame ? { ...product, price: displayPrice, mrp: sale.discounted ? baseDisplay : undefined, name: `${product.name} (${selectedSize.label})`, selectedSize: selectedSize.label } : { ...product, ...(sale.discounted ? { price: displayPrice, mrp: baseDisplay } : {}) };
     // use composite id for frame variants so different sizes are separate cart lines
     if (isFrame) item.id = `${product.id}__${selectedSize.label}`;
     addItem(item, quantity);
@@ -68,7 +72,17 @@ const Product = () => {
           <div>
             <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5', aspectRatio: '4/5' }}>
               <img src={product.images[activeImage]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              {product.badge && product.badge !== 'NEW' && (
+              {sale.discounted && (
+                <span className="badge" style={{ position: 'absolute', top: '16px', left: '16px', backgroundColor: '#B91C1C' }}>
+                  {sale.percent}% OFF
+                </span>
+              )}
+              {sale.discounted && product.badge === 'SALE' && (
+                <span className="badge" style={{ position: 'absolute', top: '48px', left: '16px' }}>
+                  SALE
+                </span>
+              )}
+              {!sale.discounted && product.badge && product.badge !== 'NEW' && (
                 <span className={`badge ${product.badge === 'LIMITED DROP' ? 'badge-limited' : ''}`} style={{ position: 'absolute', top: '16px', left: '16px' }}>
                   {product.badge}
                 </span>
@@ -113,7 +127,15 @@ const Product = () => {
             {product.product_code && <span style={{ fontSize: '0.8rem', letterSpacing: '0.1em', color: 'var(--color-gray)', fontWeight: 700 }}>{product.product_code}</span>}
             <h1 className="font-black" style={{ fontSize: '2rem', lineHeight: 1.15 }}>{product.product_name || product.name}</h1>
             <div className="flex items-center gap-sm">
-              <span className="text-3xl font-black">₹{displayPrice}</span>
+              {sale.discounted ? (
+                <>
+                  <span className="text-3xl font-black">₹{displayPrice}</span>
+                  <span style={{ textDecoration: 'line-through', color: 'var(--color-gray)', fontSize: '1.1rem' }}>₹{sale.mrp}</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', backgroundColor: '#15803D', padding: '2px 10px', borderRadius: 999 }}>SAVE ₹{sale.mrp - displayPrice}</span>
+                </>
+              ) : (
+                <span className="text-3xl font-black">₹{displayPrice}</span>
+              )}
             </div>
             {isFrame && (
               <div>
@@ -147,7 +169,7 @@ const Product = () => {
             </button>
 
             <div className="flex flex-col gap-xs text-sm" style={{color:'var(--color-text)'}}>
-              <span className="flex items-center gap-xs"><Truck size={16} /> Free shipping above ₹500</span>
+              <span className="flex items-center gap-xs"><Truck size={16} /> Free delivery above ₹700</span>
               <span className="flex items-center gap-xs"><RotateCcw size={16} /> Easy 7-day returns</span>
             </div>
 
