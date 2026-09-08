@@ -12,10 +12,15 @@ const PAY_COLOR={PENDING:{bg:'#FFF3CD',c:'#856404'},SUCCESS:{bg:'#D4EDDA',c:'#15
 const CUSTOM_STATUS_COLOR={pending:{bg:'#FFF3CD',c:'#856404'},reviewing:{bg:'#CCE5FF',c:'#004085'},approved:{bg:'#D4EDDA',c:'#155724'},shipped:{bg:'#D1ECF1',c:'#0C5460'},rejected:{bg:'#F8D7DA',c:'#721C24'}};
 const PAGE_LIMIT = 20;
 
+const ADMIN_TOKEN_KEY = 'eskraft-admin-token';
+const ADMIN_USER_KEY = 'eskraft-admin-user';
+
 export default function Admin(){
   const [tab,setTab]=useState('orders'); // orders | custom
-  const [token,setToken]=useState(()=>localStorage.getItem('eskraft-token'));
-  const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem('eskraft-user'))}catch{return null}});
+  // Admin session is stored separately from the customer session
+  // (eskraft-token / eskraft-user) so the two auth flows never mix.
+  const [token,setToken]=useState(()=>localStorage.getItem(ADMIN_TOKEN_KEY));
+  const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem(ADMIN_USER_KEY))}catch{return null}});
   const [orders,setOrders]=useState([]);const [total,setTotal]=useState(0);const [loading,setLoading]=useState(false);const [error,setError]=useState('');const [success,setSuccess]=useState('');const [status,setStatus]=useState('');const [search,setSearch]=useState('');const [page,setPage]=useState(1);const [newOnly,setNewOnly]=useState(false);const [newCount,setNewCount]=useState(0);const [selected,setSelected]=useState(null);
   const [customOrders,setCustomOrders]=useState(()=>{try{return JSON.parse(localStorage.getItem('eskraft-custom-orders')||'[]')}catch{return []}});
   const [customFilter,setCustomFilter]=useState('');
@@ -65,14 +70,16 @@ export default function Admin(){
 
   const handleSearch = ()=>{ setPage(1); fetchOrders(1); };
 
+  const handleAdminLogout=()=>{localStorage.removeItem(ADMIN_TOKEN_KEY);localStorage.removeItem(ADMIN_USER_KEY);setToken(null);setUser(null)};
+
   const handleLogin=async e=>{
     e.preventDefault();setError('');setSuccess('');
     try{
-      const r=await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+      const r=await fetch(`${API}/auth/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
       const d=await parseJson(r);
       if(!r.ok || !d.success) throw new Error(d.error?.message || `Login failed (${r.status})`);
       if(d.data.user.role!=='ADMIN'&&d.data.user.role!=='SUPER_ADMIN') throw new Error('Not an admin account');
-      localStorage.setItem('eskraft-token',d.data.token);localStorage.setItem('eskraft-user',JSON.stringify(d.data.user));setToken(d.data.token);setUser(d.data.user)
+      localStorage.setItem(ADMIN_TOKEN_KEY,d.data.token);localStorage.setItem(ADMIN_USER_KEY,JSON.stringify(d.data.user));setToken(d.data.token);setUser(d.data.user)
     }catch(e){setError(e.message)}
   };
 
@@ -114,7 +121,7 @@ export default function Admin(){
       {/* Admin-only header - dark, industrial - clearly not customer shop */}
       <header style={{background:'#1A1D24',borderBottom:'1px solid #2A2E39',padding:'0.9rem 1.5rem',display:'flex',justifyContent:'space-between',alignItems:'center',position:'sticky',top:0,zIndex:10}}>
         <div style={{display:'flex',alignItems:'center',gap:14}}><span style={{background:'#FF3B30',color:'#fff',padding:'4px 10px',borderRadius:6,fontSize:'0.65rem',fontWeight:900,letterSpacing:'0.1em'}}>ADMIN</span><span style={{color:'#fff',fontWeight:900,letterSpacing:'0.06em',fontSize:'1rem'}}>ESKRAFT — BACK OFFICE</span><span style={{color:'#6B7280',fontSize:'0.75rem',marginLeft:8,borderLeft:'1px solid #2A2E39',paddingLeft:12}}>{user.email}</span></div>
-        <div style={{display:'flex',gap:8,alignItems:'center'}}><a href="/" style={{color:'#9CA3AF',fontSize:'0.8rem',textDecoration:'none',border:'1px solid #2A2E39',padding:'6px 12px',borderRadius:999}}>← View Store</a><button onClick={()=>{localStorage.removeItem('eskraft-token');localStorage.removeItem('eskraft-user');setToken(null);setUser(null)}} style={{background:'#2A2E39',color:'#fff',border:'none',padding:'6px 14px',borderRadius:999,fontSize:'0.8rem',cursor:'pointer'}}>Sign out</button></div>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}><a href="/" style={{color:'#9CA3AF',fontSize:'0.8rem',textDecoration:'none',border:'1px solid #2A2E39',padding:'6px 12px',borderRadius:999}}>← View Store</a><button onClick={()=>{handleAdminLogout()}} style={{background:'#2A2E39',color:'#fff',border:'none',padding:'6px 14px',borderRadius:999,fontSize:'0.8rem',cursor:'pointer'}}>Sign out</button></div>
       </header>
     <div className="container" style={{padding:'1.5rem 1rem',maxWidth:1200,margin:'0 auto'}}>
       {/* Tabs - distinct from orders cards */}
@@ -125,7 +132,7 @@ export default function Admin(){
       {tab==='orders'&&<>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'1rem',marginBottom:'1.5rem'}}>
         <div><h2 style={{fontFamily:'var(--font-heading)',fontWeight:900,fontSize:'1.4rem',letterSpacing:'0.04em'}}>ORDERS</h2><p style={{color:'#888',fontSize:'0.85rem'}}>{total} total · page {page} · <span style={{color:'crimson',fontWeight:700}}>{newCount} new</span></p></div>
-        <div style={{display:'flex',gap:8}}><button onClick={()=>fetchOrders()} style={{background:'#fff',color:'#111',border:'1px solid #111',padding:'0.6rem 1.2rem',borderRadius:8,fontWeight:700}}>↻ Refresh</button><button onClick={()=>{localStorage.removeItem('eskraft-token');localStorage.removeItem('eskraft-user');setToken(null);setUser(null)}} style={{background:'#fff',color:'#111',border:'1px solid #111',padding:'0.6rem 1.2rem',borderRadius:8,fontWeight:700}}>Sign out</button></div>
+        <div style={{display:'flex',gap:8}}><button onClick={()=>fetchOrders()} style={{background:'#fff',color:'#111',border:'1px solid #111',padding:'0.6rem 1.2rem',borderRadius:8,fontWeight:700}}>↻ Refresh</button><button onClick={()=>{handleAdminLogout()}} style={{background:'#fff',color:'#111',border:'1px solid #111',padding:'0.6rem 1.2rem',borderRadius:8,fontWeight:700}}>Sign out</button></div>
       </div>
       {success&&<div style={{background:'#D4EDDA',color:'#155724',padding:'0.75rem 1rem',borderRadius:8,marginBottom:12,fontSize:'0.85rem',fontWeight:700}}>{success}</div>}
       {error&&<div style={{background:'#F8D7DA',color:'#721C24',padding:'0.75rem 1rem',borderRadius:8,marginBottom:12,fontSize:'0.85rem',fontWeight:700}}>Error: {error}</div>}
@@ -160,7 +167,7 @@ export default function Admin(){
         <div>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'1rem',marginBottom:'1.2rem'}}>
             <div><h2 style={{fontFamily:'var(--font-heading)',fontWeight:900,fontSize:'1.4rem',color:'#6B4F3A'}}>CUSTOM ORDERS</h2><p style={{color:'#888',fontSize:'0.85rem'}}>{customOrders.length} requests · handcrafted inquiries</p></div>
-            <div style={{display:'flex',gap:8}}><select value={customFilter} onChange={e=>setCustomFilter(e.target.value)} style={{padding:'0.6rem 1rem',border:'1px solid #D6CBB8',borderRadius:999,background:'#FFFDF8',fontSize:'0.85rem'}}><option value="">All types</option><option>Custom Keychain</option><option>Frame - 9x12 inches</option><option>Frame - 15x20 inches</option><option>Frame - 18x24 inches</option><option>Phone Stand</option><option>Something Else</option></select><button onClick={()=>{localStorage.removeItem('eskraft-token');localStorage.removeItem('eskraft-user');setToken(null);setUser(null)}} style={{background:'#fff',color:'#111',border:'1px solid #111',padding:'0.6rem 1.2rem',borderRadius:8,fontWeight:700}}>Sign out</button></div>
+            <div style={{display:'flex',gap:8}}><select value={customFilter} onChange={e=>setCustomFilter(e.target.value)} style={{padding:'0.6rem 1rem',border:'1px solid #D6CBB8',borderRadius:999,background:'#FFFDF8',fontSize:'0.85rem'}}><option value="">All types</option><option>Custom Keychain</option><option>Frame - 9x12 inches</option><option>Frame - 15x20 inches</option><option>Frame - 18x24 inches</option><option>Phone Stand</option><option>Something Else</option></select><button onClick={()=>{handleAdminLogout()}} style={{background:'#fff',color:'#111',border:'1px solid #111',padding:'0.6rem 1.2rem',borderRadius:8,fontWeight:700}}>Sign out</button></div>
           </div>
           {customOrders.filter(c=>!customFilter||c.type===customFilter).length===0?(
             <div style={{background:'#FFFDF8',border:'1px dashed #D6CBB8',borderRadius:16,padding:'3rem',textAlign:'center'}}>
@@ -177,6 +184,9 @@ export default function Admin(){
                     <div style={{minWidth:200,flex:1}}>
                       <p style={{fontWeight:800,fontSize:'0.95rem'}}>{c.name} <span style={{fontWeight:400,fontSize:'0.7rem',color:'#B8A999'}}>· {c.id}</span></p>
                       <p style={{fontSize:'0.78rem',color:'#888'}}>{c.contact} · {new Date(c.createdAt).toLocaleString('en-IN')}</p>
+                      {(c.accountEmail || c.userId) && (
+                        <p style={{fontSize:'0.72rem',color:'#6B4F3A',marginTop:4}}>Account: {c.accountEmail || c.userId}{c.accountPhone ? ` · ${c.accountPhone}` : ''}</p>
+                      )}
                       <p style={{display:'inline-block',fontSize:'0.75rem',fontWeight:700,background:'#FFF6E8',border:'1px solid #F0D9B5',padding:'3px 10px',borderRadius:999,marginTop:8}}>{c.type}</p>
                       <p style={{fontSize:'0.88rem',color:'#444',marginTop:8,lineHeight:1.6,whiteSpace:'pre-wrap'}}>{c.details||'—'}</p>
                     </div>

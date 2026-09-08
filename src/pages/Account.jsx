@@ -1,7 +1,42 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import InfoPage from '../components/InfoPage';
 import { LogOut, Package, ChevronDown, ChevronUp } from 'lucide-react';
 import { API } from '../utils/api';
+
+const CUSTOM_ORDER_LOGIN_MSG = 'Please log in to your account to place a custom order.';
+
+const getSafeRedirect = (value) => {
+  if (!value) return null;
+  // Only allow internal app paths — never external URLs, protocol-relative
+  // URLs, or the admin back-office.
+  if (!value.startsWith('/') || value.startsWith('//')) return null;
+  if (value.startsWith('/admin')) return null;
+  return value;
+};
+
+const readCustomerSession = () => {
+  try {
+    const token = localStorage.getItem('eskraft-token');
+    const saved = localStorage.getItem('eskraft-user');
+    const user = saved ? JSON.parse(saved) : null;
+    // Customer storage must never hold an admin session. Purge legacy data
+    // from before the auth flows were separated.
+    if (user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')) {
+      localStorage.removeItem('eskraft-token');
+      localStorage.removeItem('eskraft-user');
+      return { token: null, user: null };
+    }
+    return { token, user };
+  } catch {
+    return { token: localStorage.getItem('eskraft-token'), user: null };
+  }
+};
+
+const isValidPhone = (value) => {
+  const normalized = String(value ?? '').replace(/[\s\-()]/g, '').trim();
+  return /^\+?\d{7,15}$/.test(normalized);
+};
 
 const inputStyle = {
   width: '100%',
@@ -36,11 +71,13 @@ const statusLabels = {
 };
 
 const Account = () => {
-  const [token, setToken] = useState(() => localStorage.getItem('eskraft-token'));
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('eskraft-user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = getSafeRedirect(searchParams.get('redirect'));
+  const showCustomOrderNotice = redirectTo === '/custom-orders';
+  const [initialSession] = useState(readCustomerSession);
+  const [token, setToken] = useState(initialSession.token);
+  const [user, setUser] = useState(initialSession.user);
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [expandedOrder, setExpandedOrder] = useState(null);
@@ -51,7 +88,7 @@ const Account = () => {
   const [authLoading, setAuthLoading] = useState(false);
 
   // Edit Profile / Account Settings
-  const [profile, setProfile] = useState({ name: '', email: '', address: '', currentPassword: '', newPassword: '' });
+  const [profile, setProfile] = useState({ name: '', email: '', phone: '', address: '', currentPassword: '', newPassword: '' });
   const [profileMsg, setProfileMsg] = useState('');
   const [profileErr, setProfileErr] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
@@ -65,10 +102,19 @@ const Account = () => {
       const res = await fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${jwt}` } });
       const data = await res.json();
       if (data.success) {
+        // Admin sessions must never be treated as customer sessions.
+        if (data.data.role === 'ADMIN' || data.data.role === 'SUPER_ADMIN') {
+          localStorage.removeItem('eskraft-token');
+          localStorage.removeItem('eskraft-user');
+          setToken(null);
+          setUser(null);
+          return;
+        }
         setProfile((p) => ({
           ...p,
           name: data.data.name || '',
           email: data.data.email || '',
+          phone: data.data.phone || data.data.customer?.phone || '',
           address: data.data.customer?.address || '',
         }));
         setProfileLoaded(true);
@@ -84,11 +130,12 @@ const Account = () => {
     setProfileErr('');
     if (!profile.name.trim()) { setProfileErr('Name cannot be empty'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim())) { setProfileErr('Please enter a valid email address'); return; }
+    if (profile.phone && profile.phone.trim() && !isValidPhone(profile.phone)) { setProfileErr('Please enter a valid phone number (7–15 digits, optional leading +)'); return; }
     if (profile.newPassword && profile.newPassword.length < 6) { setProfileErr('New password must be at least 6 characters'); return; }
     if (profile.newPassword && !profile.currentPassword) { setProfileErr('Enter your current password to set a new one'); return; }
     setProfileLoading(true);
     try {
-      const body = { name: profile.name.trim(), email: profile.email.trim(), address: profile.address };
+      const body = { name: profile.name.trim(), email: profile.email.trim(), phone: (profile.phone || '').trim(), address: profile.address };
       if (profile.newPassword) { body.currentPassword = profile.currentPassword; body.newPassword = profile.newPassword; }
       const res = await fetch(`${API}/auth/me`, {
         method: 'PATCH',
@@ -104,6 +151,9 @@ const Account = () => {
       setUser(data.data.user);
       setProfile((p) => ({ ...p, currentPassword: '', newPassword: '' }));
       setProfileMsg(data.message || 'Profile updated successfully');
+      // Re-fetch canonical profile (normalized phone) so the updated number
+      // is reflected everywhere account info is displayed.
+      fetchProfile(data.data.token);
     } catch {
       setProfileErr('Could not connect to server');
     } finally {
@@ -127,8 +177,23 @@ const Account = () => {
   };
 
   useEffect(() => {
-    if (token && user) { fetchOrders(token); if (!profileLoaded) fetchProfile(token); }
+    if (!token || !user) return;
+    // Never treat an admin session as a customer session.
+    if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+      localStorage.removeItem('eskraft-token');
+      localStorage.removeItem('eskraft-user');
+      setToken(null);
+      setUser(null);
+      return;
+    }
+    fetchOrders(token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, user]);
+
+  useEffect(() => {
+    if (token && user && !profileLoaded) fetchProfile(token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, user, profileLoaded]);
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -153,10 +218,21 @@ const Account = () => {
         return;
       }
 
+      // Defense-in-depth: customer login must never establish an admin session.
+      // (Backend also rejects admins on /auth/login with 403.)
+      if (data.data.user.role === 'ADMIN' || data.data.user.role === 'SUPER_ADMIN') {
+        setAuthError('Admin accounts must sign in via the admin portal.');
+        return;
+      }
+
       localStorage.setItem('eskraft-token', data.data.token);
       localStorage.setItem('eskraft-user', JSON.stringify(data.data.user));
       setToken(data.data.token);
       setUser(data.data.user);
+      setProfileLoaded(false);
+      if (redirectTo) {
+        navigate(redirectTo, { replace: true });
+      }
     } catch {
       setAuthError('Could not connect to server');
     } finally {
@@ -171,12 +247,21 @@ const Account = () => {
     setUser(null);
     setOrders([]);
     setForm({ name: '', email: '', phone: '', address: '', password: '' });
+    setProfile({ name: '', email: '', phone: '', address: '', currentPassword: '', newPassword: '' });
+    setProfileLoaded(false);
+    setProfileMsg('');
+    setProfileErr('');
   };
 
   if (!token || !user) {
     return (
       <InfoPage title="Account" subtitle="Sign in to track orders and manage your account.">
         <div style={{ maxWidth: '420px' }}>
+          {showCustomOrderNotice && (
+            <div style={{ padding: '0.75rem 1rem', marginBottom: '1rem', borderRadius: '8px', backgroundColor: '#FFF3CD', color: '#856404', fontSize: '0.875rem' }}>
+              {CUSTOM_ORDER_LOGIN_MSG}
+            </div>
+          )}
           <div className="flex gap-sm mb-6">
             <button
               type="button"
@@ -228,6 +313,9 @@ const Account = () => {
       <div className="flex justify-between items-center mb-8" style={{ maxWidth: '800px', margin: '0 auto 2rem' }}>
         <p className="text-sm text-gray" style={{ textTransform: 'none' }}>
           Signed in as <strong>{user.email}</strong>
+          {profile.phone ? (
+            <><br />Phone: <strong>{profile.phone}</strong></>
+          ) : null}
         </p>
         <button type="button" className="btn btn-outline" style={{ padding: '0.6rem 1.2rem', fontSize: '0.75rem' }} onClick={handleLogout}>
           <LogOut size={14} /> SIGN OUT
@@ -251,6 +339,8 @@ const Account = () => {
           <input id="profile-name" name="name" value={profile.name} onChange={handleProfileChange} required placeholder="Your name" style={inputStyle} aria-label="Your name" />
           <label className="font-bold text-sm" htmlFor="profile-email">EMAIL</label>
           <input id="profile-email" name="email" type="email" value={profile.email} onChange={handleProfileChange} required placeholder="Email" style={inputStyle} aria-label="Email" />
+          <label className="font-bold text-sm" htmlFor="profile-phone">PHONE NUMBER</label>
+          <input id="profile-phone" name="phone" type="tel" value={profile.phone} onChange={handleProfileChange} placeholder="Phone number" style={inputStyle} aria-label="Phone number" autoComplete="tel" />
           <label className="font-bold text-sm" htmlFor="profile-address">ADDRESS</label>
           <textarea id="profile-address" name="address" value={profile.address} onChange={handleProfileChange} rows={2} placeholder="Delivery address" style={inputStyle} aria-label="Address" />
           <p className="font-bold text-sm" style={{ marginTop: '0.5rem' }}>CHANGE PASSWORD <span style={{ fontWeight: 400, color: 'var(--color-gray)', textTransform: 'none' }}>(optional)</span></p>
