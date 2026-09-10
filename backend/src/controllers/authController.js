@@ -15,7 +15,7 @@ const register = async (req, res) => {
       return res.status(400).json({ success: false, error: { code: 'INVALID_PINCODE', message: 'Please enter a valid 6-digit Indian pincode.' } });
     }
 
-    const existingUser = await prisma.user.findUnique({ where: { phone: normalizedPhone } });
+    const existingUser = await prisma.user.findFirst({ where: { phone: normalizedPhone } });
     if (existingUser) {
       return res.status(400).json({ success: false, error: { code: 'USER_EXISTS', message: 'User already exists with this phone number' } });
     }
@@ -25,13 +25,13 @@ const register = async (req, res) => {
     const user = await prisma.user.create({
       data: {
         name,
-        email: email || null,
+        ...(email ? { email } : {}),
         phone: normalizedPhone,
         password: hashedPassword,
         customer: {
           create: {
             name,
-            email: email || null,
+            ...(email ? { email } : {}),
             phone: normalizedPhone,
             address: address || '',
             pincode: pincode !== undefined && String(pincode).trim() ? String(pincode).trim() : null,
@@ -71,7 +71,7 @@ const login = async (req, res) => {
       return res.status(400).json({ success: false, error: { code: 'INVALID_PHONE', message: 'Please enter a valid 10-digit Indian mobile number.' } });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: { phone: normalizedPhone },
       include: { customer: true }
     });
@@ -215,7 +215,7 @@ const updateMe = async (req, res) => {
           return res.status(400).json({ success: false, error: { code: 'INVALID_PHONE', message: 'Please enter a valid 10-digit Indian mobile number.' } });
         }
         if (normalized !== (user.phone || '')) {
-          const phoneTaken = await prisma.user.findUnique({ where: { phone: normalized } });
+          const phoneTaken = await prisma.user.findFirst({ where: { phone: normalized } });
           if (phoneTaken && phoneTaken.id !== user.id) {
             return res.status(400).json({ success: false, error: { code: 'PHONE_TAKEN', message: 'This phone number is already registered to another account' } });
           }

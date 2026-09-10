@@ -5,6 +5,9 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 dotenv.config();
 const app = express();
+// Render runs behind a single reverse proxy that sets X-Forwarded-For.
+// Trust exactly one proxy hop so express-rate-limit can read the real client IP.
+app.set('trust proxy', 1);
 app.use(helmet());
 const defaultOrigins = ['http://localhost:5173', 'http://localhost:3000', 'https://eskraft.netlify.app'];
 const envOrigins = (process.env.FRONTEND_URL || '').split(',').map(s=>s.trim()).filter(Boolean);
