@@ -112,10 +112,13 @@ const login = async (req, res) => {
 // so the two authentication flows stay completely separate.
 const adminLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
     const normalizedEmail = String(email || '').trim().toLowerCase();
     if (!normalizedEmail) {
       return res.status(400).json({ success: false, error: { code: 'EMAIL_REQUIRED', message: 'Email is required' } });
+    }
+    if (!password) {
+      return res.status(400).json({ success: false, error: { code: 'PASSWORD_REQUIRED', message: 'Password is required' } });
     }
 
     const user = await prisma.user.findUnique({
