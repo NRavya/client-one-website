@@ -113,9 +113,13 @@ const login = async (req, res) => {
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    if (!normalizedEmail) {
+      return res.status(400).json({ success: false, error: { code: 'EMAIL_REQUIRED', message: 'Email is required' } });
+    }
 
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
       include: { customer: true }
     });
 

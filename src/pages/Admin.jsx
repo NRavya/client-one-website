@@ -75,12 +75,18 @@ export default function Admin(){
   const handleLogin=async e=>{
     e.preventDefault();setError('');setSuccess('');
     try{
-      const r=await fetch(`${API}/auth/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+      const r=await fetch(`${API}/auth/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:String(email).trim().toLowerCase(),password})});
       const d=await parseJson(r);
       if(!r.ok || !d.success) throw new Error(d.error?.message || `Login failed (${r.status})`);
       if(d.data.user.role!=='ADMIN'&&d.data.user.role!=='SUPER_ADMIN') throw new Error('Not an admin account');
       localStorage.setItem(ADMIN_TOKEN_KEY,d.data.token);localStorage.setItem(ADMIN_USER_KEY,JSON.stringify(d.data.user));setToken(d.data.token);setUser(d.data.user)
-    }catch(e){setError(e.message)}
+    }catch(e){
+      if (e instanceof TypeError || /failed to fetch|networkerror|load failed/i.test(e.message)) {
+        setError(`Cannot reach the server at ${API}. The backend may be waking up (Render free tier takes ~50s) — wait a minute and retry. If this persists, the deployed frontend is likely pointing at the wrong API URL (check Netlify env VITE_API_URL).`);
+      } else {
+        setError(e.message);
+      }
+    }
   };
 
   const updateStatus=async(orderNumber,newStatus)=>{

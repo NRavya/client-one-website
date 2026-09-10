@@ -6,9 +6,21 @@ const rateLimit = require('express-rate-limit');
 dotenv.config();
 const app = express();
 app.use(helmet());
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map(s=>s.trim());
-allowedOrigins.push('https://eskraft.netlify.app');
-app.use(cors({ origin: (origin, cb) => { if (!origin || allowedOrigins.includes(origin)) cb(null, true); else cb(null, false); }, credentials: true }));
+const defaultOrigins = ['http://localhost:5173', 'http://localhost:3000', 'https://eskraft.netlify.app'];
+const envOrigins = (process.env.FRONTEND_URL || '').split(',').map(s=>s.trim()).filter(Boolean);
+const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  try {
+    const u = new URL(origin);
+    // Allow any Netlify deploy preview / production deploy + any eskraft domain
+    if (u.hostname.endsWith('.netlify.app')) return true;
+    if (u.hostname.endsWith('eskraft.in') || u.hostname.endsWith('eskraft.com')) return true;
+  } catch { /* ignore */ }
+  return false;
+};
+app.use(cors({ origin: (origin, cb) => { if (isAllowedOrigin(origin)) cb(null, true); else cb(null, false); }, credentials: true }));
 const limiter = rateLimit({ windowMs: 15*60*1000, max: 200 });
 app.use('/api/', limiter);
 // Webhooks need raw body
