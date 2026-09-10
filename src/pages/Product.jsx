@@ -56,7 +56,7 @@ const Product = () => {
     const item = isFrame ? { ...product, price: displayPrice, mrp: sale.discounted ? baseDisplay : undefined, name: `${product.name} (${selectedSize.label})`, selectedSize: selectedSize.label } : { ...product, ...(sale.discounted ? { price: displayPrice, mrp: baseDisplay } : {}) };
     // use composite id for frame variants so different sizes are separate cart lines
     if (isFrame) item.id = `${product.id}__${selectedSize.label}`;
-    addItem(item, quantity);
+    if (!addItem(item, quantity)) return; // guest was redirected to login
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };

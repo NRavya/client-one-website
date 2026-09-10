@@ -32,6 +32,7 @@ const Footer = () => {
               <Link to="/category/anime-phone-stands" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Anime Phone Stands</Link>
               <Link to="/category/customized-keychains" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Customized Keychains</Link>
               <Link to="/category/new-drops" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>New Drops</Link>
+              <Link to="/category/sale" className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>Sale</Link>
             </div>
           </div>
 

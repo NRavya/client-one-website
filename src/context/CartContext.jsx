@@ -50,6 +50,17 @@ export const CartProvider = ({ children }) => {
   }, [items]);
 
   const addItem = (product, quantity = 1) => {
+    // Guests must log in first: do NOT add, redirect to the existing
+    // Account login page and return here afterwards via ?redirect=.
+    let token = null;
+    try { token = localStorage.getItem('eskraft-token'); } catch { token = null; }
+    if (!token) {
+      try {
+        const here = window.location.pathname + window.location.search;
+        window.location.href = `/account?redirect=${encodeURIComponent(here)}`;
+      } catch {}
+      return false;
+    }
     // Caller may already split sale/mrp (Product page with size variants);
     // otherwise derive the 10% frame discount here (ProductCard quick-add).
     const hasSplit = product.mrp !== undefined && Number(product.mrp) > Number(product.price);
@@ -83,6 +94,7 @@ export const CartProvider = ({ children }) => {
       ];
     });
     setIsCartOpen(true);
+    return true;
   };
 
   const removeItem = (id) => setItems((prev) => prev.filter((item) => item.id !== id));

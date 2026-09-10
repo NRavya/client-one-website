@@ -1,0 +1,3 @@
+◇ injected env (24) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Abandoned cart cron job scheduled (every 10 min).
+Server running on port 5000

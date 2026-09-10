@@ -17,7 +17,7 @@ const ProductCard = ({ product, showCode = false }) => {
 
   const handleQuickAdd = (e) => {
     e.preventDefault();
-    addItem(product, 1);
+    if (!addItem(product, 1)) return; // guest was redirected to login
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };

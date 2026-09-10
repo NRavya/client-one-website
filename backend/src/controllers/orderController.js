@@ -2,12 +2,46 @@ const prisma = require('../config/prisma');
 const { createCashfreeOrder, verifyCashfreePayment } = require('../services/cashfree');
 const { getDeliveryFee } = require('../utils/shipping');
 const { getSalePrice } = require('../utils/discount');
+const { normalizeIndianPhone, isValidPincode } = require('../utils/phone');
+const { notifyOrderEvent } = require('../services/whatsapp');
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const createOrder = async (req, res) => {
   try {
-    const { items } = req.body;
+    const { items, customerDetails } = req.body;
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ success: false, error: { code: 'INVALID_ORDER', message: 'No items in order' } });
+    }
+    // --- Mandatory customer details (server-enforced, no frontend bypass) ---
+    // Name / phone / address / pincode required; email optional.
+    const profile = await prisma.customer.findUnique({ where: { id: req.user.customerId } });
+    if (!profile) {
+      return res.status(400).json({ success: false, error: { code: 'NO_CUSTOMER_PROFILE', message: 'Customer profile not found' } });
+    }
+    const accountUser = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    const shippingName = String(customerDetails?.name || profile.name || accountUser?.name || '').trim();
+    const shippingAddress = String(customerDetails?.address || profile.address || '').trim();
+    const rawPhone = customerDetails?.phone || profile.phone || accountUser?.phone || '';
+    const shippingPhone = normalizeIndianPhone(rawPhone);
+    const rawPincode = customerDetails?.pincode ?? profile.pincode ?? '';
+    const shippingPincode = String(rawPincode ?? '').trim();
+    const rawEmail = String(customerDetails?.email || profile.email || accountUser?.email || '').trim();
+    const shippingEmail = rawEmail || null;
+    if (!shippingName) {
+      return res.status(400).json({ success: false, error: { code: 'NAME_REQUIRED', message: 'Name is required to place your order.' } });
+    }
+    if (!shippingPhone) {
+      return res.status(400).json({ success: false, error: { code: 'PHONE_REQUIRED', message: 'Your WhatsApp number is required to place your order. Please add a valid 10-digit Indian mobile number.' } });
+    }
+    if (!shippingAddress) {
+      return res.status(400).json({ success: false, error: { code: 'ADDRESS_REQUIRED', message: 'Address is required to place your order.' } });
+    }
+    if (!isValidPincode(shippingPincode)) {
+      return res.status(400).json({ success: false, error: { code: 'PINCODE_REQUIRED', message: profile.pincode ? 'Please enter a valid 6-digit Indian pincode.' : 'Please update your address with a valid 6-digit Indian pincode before checkout.' } });
+    }
+    if (shippingEmail && !EMAIL_RE.test(shippingEmail)) {
+      return res.status(400).json({ success: false, error: { code: 'INVALID_EMAIL', message: 'Please enter a valid email address or leave it blank.' } });
     }
     // validate quantities
     for (const it of items) {
@@ -56,6 +90,7 @@ const createOrder = async (req, res) => {
         data: {
           orderNumber, customerId: req.user.customerId, subtotal, shippingFee, total,
           status: 'PENDING_PAYMENT', paymentStatus: 'PENDING',
+          shippingName, shippingPhone, shippingEmail, shippingAddress, shippingPincode,
           items: { create: orderItemsData },
         },
         include: { items: { include: { product: true } } },
@@ -79,7 +114,7 @@ const createOrder = async (req, res) => {
       return created;
     }, { maxWait: 10000, timeout: 15000 });
 
-     // create Cashfree payment order - auto-fill from logged-in user or checkout form body
+     // create Cashfree payment order - use validated snapshot (email optional)
     // --- Cashfree AFTER transaction commit (never inside $transaction) ---
     let cashfreeData = null;
     console.log('Cashfree env check:', {
@@ -88,10 +123,11 @@ const createOrder = async (req, res) => {
       hasSecretKey: Boolean(process.env.CASHFREE_SECRET_KEY),
       environment: process.env.CASHFREE_ENVIRONMENT
     });
+    // Fire-and-forget order-confirmed WhatsApp (disabled unless provider configured).
+    notifyOrderEvent({ event: 'order_confirmed', order, phone: shippingPhone }).catch(() => {});
     if (process.env.CASHFREE_APP_ID && process.env.CASHFREE_APP_ID !== 'your_cashfree_app_id') {
       try {
-        const { customerDetails } = req.body;
-        const cf = await createCashfreeOrder({ amount: order.total, orderId: order.orderNumber, customerId: req.user.customerId, customerName: customerDetails?.name || req.user.name, customerEmail: customerDetails?.email || req.user.email, customerPhone: customerDetails?.phone || req.user.phone });
+        const cf = await createCashfreeOrder({ amount: order.total, orderId: order.orderNumber, customerId: req.user.customerId, customerName: shippingName, customerEmail: shippingEmail, customerPhone: shippingPhone });
         cashfreeData = { payment_session_id: cf.payment_session_id, payment_link: cf.payment_link, cf_order_id: cf.cf_order_id };
         await prisma.payment.create({ data: { orderId: order.id, providerOrderId: String(cf.cf_order_id), amount: order.total, status: 'PENDING' } });
       } catch (e) {
@@ -155,15 +191,28 @@ const getAllOrders = async (req, res) => {
     res.json({ success: true, data: { orders, total, page: Number(page), limit: Number(limit) } });
   } catch (e) { console.error(e); res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Internal server error' } }); }
 };
+const STATUS_TO_WHATSAPP_EVENT = {
+  PAID: 'order_confirmed',
+  PROCESSING: 'order_packed',
+  SHIPPED: 'order_shipped',
+  DELIVERED: 'order_delivered',
+  CANCELLED: 'order_cancelled',
+};
+
 const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params; const { status } = req.body;
     const allowed = ['PENDING_PAYMENT','PAID','PROCESSING','SHIPPED','DELIVERED','CANCELLED','FAILED','REFUNDED'];
     if (!allowed.includes(status)) return res.status(400).json({ success: false, error: { code: 'INVALID_STATUS', message: 'Invalid status' } });
-    let order = await prisma.order.findUnique({ where: { orderNumber: id } });
-    if (!order) order = await prisma.order.findUnique({ where: { id } });
+    let order = await prisma.order.findUnique({ where: { orderNumber: id }, include: { customer: true } });
+    if (!order) order = await prisma.order.findUnique({ where: { id }, include: { customer: true } });
     if (!order) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found' } });
     const updated = await prisma.order.update({ where: { id: order.id }, data: { status } });
+    const waEvent = STATUS_TO_WHATSAPP_EVENT[status];
+    if (waEvent) {
+      const phone = updated.shippingPhone || order.shippingPhone || order.customer?.phone || null;
+      notifyOrderEvent({ event: waEvent, order: { ...updated, customer: order.customer }, phone }).catch(() => {});
+    }
     res.json({ success: true, data: updated });
   } catch (e) { res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Internal server error' } }); }
 };

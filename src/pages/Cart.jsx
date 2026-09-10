@@ -5,11 +5,15 @@ import { useCart } from '../context/useCart';
 import { MIN_ORDER_VALUE } from '../context/CartContext';
 import { getDeliveryFee } from '../utils/shipping';
 import CheckoutForm from '../components/CheckoutForm';
+import PhoneGate from '../components/PhoneGate';
+import { useCustomerPhone } from '../utils/useCustomerPhone';
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, subtotal, totalCount } = useCart();
   const [showCheckout, setShowCheckout] = React.useState(false);
   const [checkoutMsg, setCheckoutMsg] = React.useState('');
+  const { status: phoneStatus, refresh: refreshPhone, isLoggedIn } = useCustomerPhone();
+  const phoneGated = items.length > 0 && phoneStatus !== 'ready';
 
   // Shared slab: ₹200–349 → ₹70 | ₹350–699 → ₹35 | ₹700+ → FREE; null below ₹200
   const shipping = getDeliveryFee(subtotal);
@@ -26,6 +30,41 @@ const Cart = () => {
           Nothing in here yet — go grab something before the drop sells out.
         </p>
         <Link to="/category/all" className="btn">START SHOPPING</Link>
+      </div>
+    );
+  }
+
+  if (phoneGated) {
+    return (
+      <div className="container section" style={{ maxWidth: '640px' }}>
+        <h1 className="text-5xl font-black mb-8">YOUR CART ({totalCount})</h1>
+        {!isLoggedIn ? (
+          <div style={{
+            border: '1px solid var(--color-border)',
+            borderRadius: '16px',
+            padding: '2.5rem 2rem',
+            backgroundColor: '#FFFEFB',
+            textAlign: 'center'
+          }}>
+            <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.15rem', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
+              SIGN IN WITH PHONE NUMBER TO VIEW YOUR CART
+            </p>
+            <p className="text-sm text-gray" style={{ textTransform: 'none', fontWeight: 400, marginBottom: '1.5rem' }}>
+              Please sign in with your phone number to access your cart and receive order updates.
+            </p>
+            <a href="/account" className="btn" style={{ display: 'inline-block', width: 'fit-content' }}>
+              SIGN IN WITH PHONE NUMBER
+            </a>
+          </div>
+        ) : (
+          <>
+            {phoneStatus === 'checking' ? (
+              <p className="text-gray">Checking your details...</p>
+            ) : (
+              <PhoneGate mode="cart" onSaved={refreshPhone} />
+            )}
+          </>
+        )}
       </div>
     );
   }

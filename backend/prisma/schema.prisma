@@ -11,16 +11,16 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  name      String
-  email     String     @unique
-  phone     String?
-  password  String
-  role      Role       @default(CUSTOMER)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id              String     @id @default(uuid())
+  name            String
+  email           String?    @unique
+  phone           String     @unique
+  password        String
+  role            Role       @default(CUSTOMER)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
-  customer  Customer?
+  customer        Customer?
 }
 
 enum Role {
@@ -30,17 +30,21 @@ enum Role {
 }
 
 model Customer {
-  id        String     @id @default(uuid())
-  userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id])
-  name      String
-  email     String     @unique
-  phone     String?
-  address   String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id                    String     @id @default(uuid())
+  userId                String     @unique
+  user                  User       @relation(fields: [userId], references: [id])
+  name                  String
+  email                 String?    @unique
+  phone                 String     @unique
+  address               String?
+  pincode               String?
+  // Marketing/abandoned-cart WhatsApp consent — kept separate from the
+  // mandatory order-communication phone number. Defaults to false.
+  whatsappMarketingOptIn Boolean    @default(false)
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
 
-  orders    Order[]
+  orders                Order[]
 }
 
 model Product {
@@ -56,6 +60,9 @@ model Product {
   category    String?
   type        String?
   badge       String?
+  // Sale membership without leaving the original category:
+  // category stays "Frames" while isOnSale exposes it under /category/sale.
+  isOnSale    Boolean     @default(false)
   active      Boolean     @default(true)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -76,11 +83,32 @@ model Order {
   discount      Float        @default(0)
   total         Float
   currency      String       @default("INR")
+  // Delivery snapshot at order time — retained even if the profile later changes.
+  shippingName    String?
+  shippingPhone   String?
+  shippingEmail   String?
+  shippingAddress String?
+  shippingPincode String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
   items         OrderItem[]
   payments      Payment[]
+}
+
+// WhatsApp automation log (provider-agnostic, disabled by default).
+// One row per (phone, event, orderNumber) attempt — used for idempotency so
+// duplicate notifications are never sent, and for debugging delivery.
+model WhatsappEvent {
+  id          String   @id @default(uuid())
+  phone       String
+  event       String
+  orderNumber String?
+  status      String   @default("SKIPPED_DISABLED")
+  detail      String?
+  createdAt   DateTime @default(now())
+
+  @@index([phone, event, orderNumber])
 }
 
 enum OrderStatus {

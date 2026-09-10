@@ -682,6 +682,7 @@
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Zen Temple Frame 2",
     "category": "Frames",
+    "isOnSale": true,
     "type": "Wall Decor",
     "images": [
       "/assets/ESKFRM0003 - Zen Temple.JPG"
@@ -710,6 +711,7 @@
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Zen Temple Frame",
     "category": "Frames",
+    "isOnSale": true,
     "type": "Wall Decor",
     "images": [
       "/assets/ESKFRM0004 - Zen Temple.JPG"
@@ -738,6 +740,7 @@
     "compareAtPrice": null,
     "shortDescription": "Premium handcrafted Japanese Quote - 1",
     "category": "Frames",
+    "isOnSale": true,
     "type": "Wall Decor",
     "images": [
       "/assets/ESKFRM0005 - Japanese Quotes.JPG"

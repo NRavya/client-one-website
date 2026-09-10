@@ -3,12 +3,14 @@ import { ShoppingCart, Search, Menu, User, X } from 'lucide-react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
-const navLinks = [
+const categoryLinks = [
   { label: 'Shop', to: '/category/all' },
   { label: 'New Drops', to: '/category/new-drops' },
-  { label: 'Custom Orders', to: '/custom-orders' },
+  { label: 'Sale', to: '/category/sale' },
   { label: 'About', to: '/about' },
 ];
+
+const customOrderLink = { label: 'Custom Order', to: '/custom-orders' };
 
 const Header = () => {
   const { totalCount, openCart } = useCart();
@@ -47,7 +49,7 @@ const Header = () => {
               </button>
 
               <nav className="desktop-nav" aria-label="Main navigation">
-                {navLinks.map((link) => (
+                {categoryLinks.map((link) => (
                     <NavLink
                         key={link.to}
                         to={link.to}
@@ -73,8 +75,21 @@ const Header = () => {
               ESKRAFT
             </Link>
 
-            {/* ── Right: Icons ── */}
+            {/* ── Right: Custom Order + Icons ── */}
             <div className="header-right">
+
+              {/* Custom Order — far right, visually distinct from categories */}
+              <NavLink
+                  key={customOrderLink.to}
+                  to={customOrderLink.to}
+                  className={({ isActive }) =>
+                      isActive ? 'nav-link nav-link-custom header-custom-btn active' : 'nav-link nav-link-custom header-custom-btn'
+                  }
+              >
+                <span className="nav-link-content">
+                  {customOrderLink.label}
+                </span>
+              </NavLink>
 
               {/* Search */}
               <button
@@ -177,8 +192,8 @@ const Header = () => {
 
                 <ul className="mobile-menu-list container">
 
-                  {/* Navigation links */}
-                  {navLinks.map((link) => (
+                  {/* Navigation links — categories first, Custom Order last + distinct */}
+                  {categoryLinks.map((link) => (
                       <li key={link.to}>
                         <Link
                             to={link.to}
@@ -189,6 +204,15 @@ const Header = () => {
                         </Link>
                       </li>
                   ))}
+                  <li key={customOrderLink.to}>
+                    <Link
+                        to={customOrderLink.to}
+                        className="mobile-menu-link mobile-custom-link"
+                        onClick={toggleMenu}
+                    >
+                      {customOrderLink.label}
+                    </Link>
+                  </li>
 
                   {/* Account */}
                   <li>
@@ -333,6 +357,37 @@ const Header = () => {
           display: flex;
           align-items: center;
           gap: 0.25rem;
+        }
+
+        .header-custom-btn {
+          margin-right: 0.5rem;
+          white-space: nowrap;
+        }
+
+        .nav-link-custom {
+          border: 1px solid var(--color-wood-dark);
+          color: var(--color-wood-dark);
+          opacity: 1;
+          margin-left: 0.5rem;
+        }
+
+        .header-custom-btn.nav-link-custom {
+          margin-left: 0;
+        }
+
+        .nav-link-custom:hover {
+          background-color: var(--color-wood-dark);
+          color: var(--color-linen);
+        }
+
+        .nav-link-custom.active {
+          background-color: var(--color-wood-dark);
+          color: var(--color-linen);
+          opacity: 1;
+        }
+
+        .mobile-custom-link {
+          color: var(--color-wood-dark);
         }
 
         .nav-link {
@@ -551,6 +606,11 @@ const Header = () => {
 
           /* Hide desktop navigation */
           .desktop-nav {
+            display: none !important;
+          }
+
+          /* Custom Order lives in the mobile slide-down menu on small screens */
+          .header-custom-btn {
             display: none !important;
           }
 

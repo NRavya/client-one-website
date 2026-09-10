@@ -1,19 +1,23 @@
 const prisma = require('../config/prisma');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-const PHONE_RE = /^\+?\d{7,15}$/;
-const normalizePhone = (v) => String(v ?? '').replace(/[\s\-()]/g, '').trim();
+const { normalizeIndianPhone, isValidPincode } = require('../utils/phone');
 
 const register = async (req, res) => {
   try {
-    // NOTE: role is intentionally ignored here — public registration can only
-    // ever create CUSTOMER accounts. Admins are seeded / created out-of-band.
-    const { name, email, phone, address, password } = req.body;
-    
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const { name, email, phone, address, pincode, password } = req.body;
+
+    const normalizedPhone = normalizeIndianPhone(phone);
+    if (!normalizedPhone) {
+      return res.status(400).json({ success: false, error: { code: 'PHONE_REQUIRED', message: 'Your WhatsApp number is required. Please enter a valid 10-digit Indian mobile number.' } });
+    }
+    if (pincode !== undefined && String(pincode).trim() && !isValidPincode(pincode)) {
+      return res.status(400).json({ success: false, error: { code: 'INVALID_PINCODE', message: 'Please enter a valid 6-digit Indian pincode.' } });
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { phone: normalizedPhone } });
     if (existingUser) {
-      return res.status(400).json({ success: false, error: { code: 'USER_EXISTS', message: 'User already exists' } });
+      return res.status(400).json({ success: false, error: { code: 'USER_EXISTS', message: 'User already exists with this phone number' } });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -21,16 +25,17 @@ const register = async (req, res) => {
     const user = await prisma.user.create({
       data: {
         name,
-        email,
-        phone,
+        email: email || null,
+        phone: normalizedPhone,
         password: hashedPassword,
-          customer: {
-            create: {
-              name,
-              email,
-              phone,
-              address: address || ''
-            }
+        customer: {
+          create: {
+            name,
+            email: email || null,
+            phone: normalizedPhone,
+            address: address || '',
+            pincode: pincode !== undefined && String(pincode).trim() ? String(pincode).trim() : null,
+          }
         }
       },
       include: {
@@ -44,7 +49,7 @@ const register = async (req, res) => {
       success: true,
       data: {
         token,
-        user: { id: user.id, name: user.name, email: user.email, role: user.role, customerId: user.customer.id }
+        user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, customerId: user.customer.id }
       },
       message: 'User registered successfully'
     });
@@ -59,10 +64,15 @@ const register = async (req, res) => {
 // Admins must use POST /api/auth/admin/login (used only by /admin).
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { phone, password } = req.body;
+
+    const normalizedPhone = normalizeIndianPhone(phone);
+    if (!normalizedPhone) {
+      return res.status(400).json({ success: false, error: { code: 'INVALID_PHONE', message: 'Please enter a valid 10-digit Indian mobile number.' } });
+    }
 
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { phone: normalizedPhone },
       include: { customer: true }
     });
 
@@ -86,7 +96,7 @@ const login = async (req, res) => {
       success: true,
       data: {
         token,
-        user: { id: user.id, name: user.name, email: user.email, role: user.role, customerId }
+        user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, customerId }
       },
       message: 'Logged in successfully'
     });
@@ -158,7 +168,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Scoped strictly to req.user.userId so one customer can never update another.
 const updateMe = async (req, res) => {
   try {
-    const { name, email, phone, address, currentPassword, newPassword } = req.body;
+    const { name, email, phone, address, pincode, whatsappMarketingOptIn, currentPassword, newPassword } = req.body;
 
     const user = await prisma.user.findUnique({
       where: { id: req.user.userId },
@@ -171,6 +181,7 @@ const updateMe = async (req, res) => {
     const userData = {};
     const customerData = {};
     let emailChanged = false;
+    let phoneChanged = false;
 
     if (name !== undefined) {
       const n = String(name).trim();
@@ -180,31 +191,60 @@ const updateMe = async (req, res) => {
 
     if (email !== undefined) {
       const e = String(email).trim();
-      if (!EMAIL_RE.test(e)) return res.status(400).json({ success: false, error: { code: 'INVALID_EMAIL', message: 'Please enter a valid email address' } });
-      if (e !== user.email) {
-        const taken = await prisma.user.findUnique({ where: { email: e } });
-        if (taken) return res.status(400).json({ success: false, error: { code: 'EMAIL_TAKEN', message: 'This email is already registered to another account' } });
-        userData.email = e; customerData.email = e; emailChanged = true;
+      if (e && !EMAIL_RE.test(e)) return res.status(400).json({ success: false, error: { code: 'INVALID_EMAIL', message: 'Please enter a valid email address' } });
+      if (e !== (user.email || '')) {
+        if (e) {
+          const taken = await prisma.user.findUnique({ where: { email: e } });
+          if (taken) return res.status(400).json({ success: false, error: { code: 'EMAIL_TAKEN', message: 'This email is already registered to another account' } });
+        }
+        userData.email = e || null; customerData.email = e || null; emailChanged = true;
       }
     }
 
     if (phone !== undefined) {
       const raw = String(phone).trim();
       if (raw === '') {
-        if (user.phone != null) userData.phone = null;
-        if (user.customer?.phone != null) customerData.phone = null;
+        return res.status(400).json({ success: false, error: { code: 'PHONE_REQUIRED', message: 'Your WhatsApp number is required. Please enter a valid 10-digit Indian mobile number.' } });
       } else {
-        const normalized = normalizePhone(raw);
-        if (!PHONE_RE.test(normalized)) {
-          return res.status(400).json({ success: false, error: { code: 'INVALID_PHONE', message: 'Please enter a valid phone number (7–15 digits, optional leading +)' } });
+        const normalized = normalizeIndianPhone(raw);
+        if (!normalized) {
+          return res.status(400).json({ success: false, error: { code: 'INVALID_PHONE', message: 'Please enter a valid 10-digit Indian mobile number.' } });
         }
-        if (normalized !== (user.phone || '')) userData.phone = normalized;
-        if (normalized !== (user.customer?.phone || '')) customerData.phone = normalized;
+        if (normalized !== (user.phone || '')) {
+          const phoneTaken = await prisma.user.findUnique({ where: { phone: normalized } });
+          if (phoneTaken && phoneTaken.id !== user.id) {
+            return res.status(400).json({ success: false, error: { code: 'PHONE_TAKEN', message: 'This phone number is already registered to another account' } });
+          }
+          userData.phone = normalized;
+          customerData.phone = normalized;
+          phoneChanged = true;
+        }
       }
     }
 
     if (address !== undefined) {
       customerData.address = String(address);
+    }
+
+    if (pincode !== undefined) {
+      const pin = String(pincode).trim();
+      if (pin === '') {
+        if (user.customer?.pincode != null) customerData.pincode = null;
+      } else {
+        if (!isValidPincode(pin)) {
+          return res.status(400).json({ success: false, error: { code: 'INVALID_PINCODE', message: 'Please enter a valid 6-digit Indian pincode.' } });
+        }
+        if (pin !== (user.customer?.pincode || '')) customerData.pincode = pin;
+      }
+    }
+
+    // Marketing WhatsApp consent — strictly separate from the mandatory
+    // order-communication phone number. Only set when explicitly provided.
+    if (whatsappMarketingOptIn !== undefined) {
+      const optIn = Boolean(whatsappMarketingOptIn);
+      if (optIn !== Boolean(user.customer?.whatsappMarketingOptIn)) {
+        customerData.whatsappMarketingOptIn = optIn;
+      }
     }
 
     if (newPassword) {
@@ -236,8 +276,10 @@ const updateMe = async (req, res) => {
             userId: user.id,
             name: customerData.name || userData.name || user.name,
             email: customerData.email || userData.email || user.email,
-            phone: customerData.phone ?? userData.phone ?? user.phone ?? null,
-            address: customerData.address || ''
+            phone: customerData.phone ?? userData.phone ?? user.phone,
+            address: customerData.address || '',
+            pincode: customerData.pincode ?? null,
+            whatsappMarketingOptIn: customerData.whatsappMarketingOptIn ?? false,
           }
         }));
       }
@@ -257,9 +299,9 @@ const updateMe = async (req, res) => {
       success: true,
       data: {
         token,
-        user: { id: updated.id, name: updated.name, email: updated.email, role: updated.role, customerId }
+        user: { id: updated.id, name: updated.name, email: updated.email, phone: updated.phone, role: updated.role, customerId }
       },
-      message: emailChanged ? 'Profile updated. Please use your new email next time you sign in.' : 'Profile updated successfully'
+      message: phoneChanged ? 'Profile updated. Please use your new phone number next time you sign in.' : (emailChanged ? 'Profile updated. Please use your new email next time you sign in.' : 'Profile updated successfully')
     });
   } catch (error) {
     console.error(error);

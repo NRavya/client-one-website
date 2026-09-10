@@ -13,6 +13,7 @@ const categoryMap = {
   'engraved-dates': { title: 'ENGRAVED DATES', filter: (p) => p.category === 'Engraved Dates' },
   'new-drops': { title: 'NEW DROPS', filter: () => false },
   'bestsellers': { title: 'BESTSELLERS', filter: (p) => p.isBestseller },
+  'sale': { title: 'SALE', filter: (p) => p.isOnSale === true || p.badge === 'SALE' },
   /* legacy aliases */
   'the-odyssey': { title: 'FRAMES', filter: (p) => p.category === 'Frames' },
   'anime-corner': { title: 'ANIME PHONE STANDS', filter: (p) => p.category === 'Anime Phone Stand' },
@@ -26,6 +27,7 @@ const filters = [
   { label: 'Engraved Crafts', slug: 'engraved-crafts' },
   { label: 'Dog Tags', slug: 'dog-tag-keychains' },
   { label: 'Engraved Dates', slug: 'engraved-dates' },
+  { label: 'Sale', slug: 'sale' },
 ];
 
 const Category = () => {

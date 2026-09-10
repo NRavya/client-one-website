@@ -3,6 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import InfoPage from '../components/InfoPage';
 import { LogOut, Package, ChevronDown, ChevronUp } from 'lucide-react';
 import { API } from '../utils/api';
+import {
+  normalizeIndianPhone,
+  formatPhoneInput,
+  formatIndianDisplay,
+  getGuestPhone,
+} from '../utils/phone';
 
 const CUSTOM_ORDER_LOGIN_MSG = 'Please log in to your account to place a custom order.';
 
@@ -33,10 +39,7 @@ const readCustomerSession = () => {
   }
 };
 
-const isValidPhone = (value) => {
-  const normalized = String(value ?? '').replace(/[\s\-()]/g, '').trim();
-  return /^\+?\d{7,15}$/.test(normalized);
-};
+const isValidPincode = (value) => /^[1-9]\d{5}$/.test(String(value ?? '').trim());
 
 const inputStyle = {
   width: '100%',
@@ -82,20 +85,40 @@ const Account = () => {
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [expandedOrder, setExpandedOrder] = useState(null);
 
-  const [mode, setMode] = useState('login');
-  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', password: '' });
+  const [mode, setMode] = useState('login'); // login | register
+  const [form, setForm] = useState({ name: '', phone: '', address: '', pincode: '', password: '' });
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
 
   // Edit Profile / Account Settings
-  const [profile, setProfile] = useState({ name: '', email: '', phone: '', address: '', currentPassword: '', newPassword: '' });
+  const [profile, setProfile] = useState({ name: '', email: '', phone: '', address: '', pincode: '', currentPassword: '', newPassword: '' });
   const [profileMsg, setProfileMsg] = useState('');
   const [profileErr, setProfileErr] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-  const handleProfileChange = (e) => setProfile({ ...profile, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    if (e.target.name === 'phone') {
+      setForm({ ...form, phone: formatPhoneInput(e.target.value) });
+      return;
+    }
+    if (e.target.name === 'pincode') {
+      setForm({ ...form, pincode: String(e.target.value).replace(/\D/g, '').slice(0, 6) });
+      return;
+    }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+  const handleProfileChange = (e) => {
+    if (e.target.name === 'phone') {
+      setProfile({ ...profile, phone: formatPhoneInput(e.target.value) });
+      return;
+    }
+    if (e.target.name === 'pincode') {
+      setProfile({ ...profile, pincode: String(e.target.value).replace(/\D/g, '').slice(0, 6) });
+      return;
+    }
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
 
   const fetchProfile = async (jwt) => {
     try {
@@ -114,8 +137,9 @@ const Account = () => {
           ...p,
           name: data.data.name || '',
           email: data.data.email || '',
-          phone: data.data.phone || data.data.customer?.phone || '',
+          phone: formatPhoneInput(data.data.phone || data.data.customer?.phone || ''),
           address: data.data.customer?.address || '',
+          pincode: data.data.customer?.pincode || '',
         }));
         setProfileLoaded(true);
       }
@@ -129,13 +153,15 @@ const Account = () => {
     setProfileMsg('');
     setProfileErr('');
     if (!profile.name.trim()) { setProfileErr('Name cannot be empty'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim())) { setProfileErr('Please enter a valid email address'); return; }
-    if (profile.phone && profile.phone.trim() && !isValidPhone(profile.phone)) { setProfileErr('Please enter a valid phone number (7–15 digits, optional leading +)'); return; }
+    if (profile.email && profile.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim())) { setProfileErr('Please enter a valid email address'); return; }
+    const normalizedProfilePhone = normalizeIndianPhone(profile.phone);
+    if (!normalizedProfilePhone) { setProfileErr('Your WhatsApp number is required. Please enter a valid 10-digit Indian mobile number.'); return; }
+    if (profile.pincode && profile.pincode.trim() && !isValidPincode(profile.pincode)) { setProfileErr('Please enter a valid 6-digit Indian pincode.'); return; }
     if (profile.newPassword && profile.newPassword.length < 6) { setProfileErr('New password must be at least 6 characters'); return; }
     if (profile.newPassword && !profile.currentPassword) { setProfileErr('Enter your current password to set a new one'); return; }
     setProfileLoading(true);
     try {
-      const body = { name: profile.name.trim(), email: profile.email.trim(), phone: (profile.phone || '').trim(), address: profile.address };
+      const body = { name: profile.name.trim(), email: profile.email?.trim() || '', phone: normalizedProfilePhone, address: profile.address, pincode: String(profile.pincode || '').trim() };
       if (profile.newPassword) { body.currentPassword = profile.currentPassword; body.newPassword = profile.newPassword; }
       const res = await fetch(`${API}/auth/me`, {
         method: 'PATCH',
@@ -195,15 +221,60 @@ const Account = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, user, profileLoaded]);
 
+  const persistGuestPhoneToAccount = async (jwt) => {
+    const guest = getGuestPhone();
+    if (!guest) return jwt;
+    try {
+      const meRes = await fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${jwt}` } });
+      const me = await meRes.json();
+      const hasPhone = me.success && normalizeIndianPhone(me.data.phone || me.data.customer?.phone);
+      if (hasPhone) {
+        try { localStorage.removeItem('eskraft-guest-phone'); } catch {}
+        return jwt;
+      }
+      const saveRes = await fetch(`${API}/auth/me`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+        body: JSON.stringify({ phone: guest }),
+      });
+      const saved = await saveRes.json();
+      if (saved.success) {
+        try {
+          localStorage.setItem('eskraft-token', saved.data.token);
+          localStorage.setItem('eskraft-user', JSON.stringify(saved.data.user));
+          localStorage.removeItem('eskraft-guest-phone');
+        } catch {}
+        return saved.data.token;
+      }
+    } catch {}
+    return jwt;
+  };
+
   const handleAuth = async (e) => {
     e.preventDefault();
     setAuthError('');
     setAuthLoading(true);
 
+    if (mode === 'register') {
+      if (!normalizeIndianPhone(form.phone)) {
+        setAuthError('Your WhatsApp number is required. Please enter a valid 10-digit Indian mobile number.');
+        setAuthLoading(false);
+        return;
+      }
+      if (!isValidPincode(form.pincode)) {
+        setAuthError('Please enter a valid 6-digit Indian pincode.');
+        setAuthLoading(false);
+        return;
+      }
+    }
+
     const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
     const body = mode === 'login'
-      ? { email: form.email, password: form.password }
-      : { name: form.name, email: form.email, phone: form.phone, address: form.address, password: form.password };
+      ? { phone: normalizeIndianPhone(form.phone), password: form.password }
+      : {
+          name: form.name, phone: normalizeIndianPhone(form.phone), address: form.address,
+          pincode: String(form.pincode || '').trim(), password: form.password,
+        };
 
     try {
       const res = await fetch(`${API}${endpoint}`, {
@@ -225,10 +296,18 @@ const Account = () => {
         return;
       }
 
-      localStorage.setItem('eskraft-token', data.data.token);
-      localStorage.setItem('eskraft-user', JSON.stringify(data.data.user));
-      setToken(data.data.token);
-      setUser(data.data.user);
+      let finalToken = data.data.token;
+      let finalUser = data.data.user;
+      localStorage.setItem('eskraft-token', finalToken);
+      localStorage.setItem('eskraft-user', JSON.stringify(finalUser));
+      // Guest phone captured before login carries over to the DB account.
+      finalToken = await persistGuestPhoneToAccount(finalToken);
+      try {
+        const savedUser = localStorage.getItem('eskraft-user');
+        finalUser = savedUser ? JSON.parse(savedUser) : finalUser;
+      } catch {}
+      setToken(finalToken);
+      setUser(finalUser);
       setProfileLoaded(false);
       if (redirectTo) {
         navigate(redirectTo, { replace: true });
@@ -246,8 +325,8 @@ const Account = () => {
     setToken(null);
     setUser(null);
     setOrders([]);
-    setForm({ name: '', email: '', phone: '', address: '', password: '' });
-    setProfile({ name: '', email: '', phone: '', address: '', currentPassword: '', newPassword: '' });
+    setForm({ name: '', phone: '', address: '', pincode: '', password: '' });
+    setProfile({ name: '', email: '', phone: '', address: '', pincode: '', currentPassword: '', newPassword: '' });
     setProfileLoaded(false);
     setProfileMsg('');
     setProfileErr('');
@@ -286,17 +365,19 @@ const Account = () => {
               {authError}
             </div>
           )}
-
-          <form onSubmit={handleAuth} className="flex flex-col gap-sm">
+            <form onSubmit={handleAuth} className="flex flex-col gap-sm">
             {mode === 'register' && (
               <input name="name" value={form.name} onChange={handleChange} required placeholder="Your name" style={inputStyle} aria-label="Your name" />
             )}
-            <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="Email" style={inputStyle} aria-label="Email" />
-            {mode === 'register' && (
-              <input name="phone" type="tel" value={form.phone} onChange={handleChange} placeholder="Phone (optional)" style={inputStyle} aria-label="Phone" />
-            )}
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'stretch' }}>
+              <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', padding: '0 0.9rem', border: '1px solid var(--color-border)', borderRadius: '8px', backgroundColor: '#F5F3ED', fontWeight: 800, fontSize: '0.95rem' }}>+91</span>
+              <input name="phone" type="tel" value={form.phone} onChange={handleChange} required placeholder="WhatsApp number (required)" style={{ ...inputStyle, flex: 1, minWidth: 0 }} aria-label="WhatsApp number (required)" inputMode="numeric" maxLength={11} />
+            </div>
             {mode === 'register' && (
               <textarea name="address" value={form.address} onChange={handleChange} required placeholder="Address" rows={2} style={inputStyle} aria-label="Address" />
+            )}
+            {mode === 'register' && (
+              <input name="pincode" value={form.pincode} onChange={handleChange} required placeholder="Pincode (6 digits)" style={inputStyle} aria-label="Pincode" inputMode="numeric" maxLength={6} />
             )}
             <input name="password" type="password" value={form.password} onChange={handleChange} required minLength={6} placeholder="Password" style={inputStyle} aria-label="Password" />
             <button type="submit" className="btn" disabled={authLoading}>
@@ -312,9 +393,9 @@ const Account = () => {
     <InfoPage title={`Hey, ${user.name}!`} subtitle="Welcome to your ESKRAFT account.">
       <div className="flex justify-between items-center mb-8" style={{ maxWidth: '800px', margin: '0 auto 2rem' }}>
         <p className="text-sm text-gray" style={{ textTransform: 'none' }}>
-          Signed in as <strong>{user.email}</strong>
-          {profile.phone ? (
-            <><br />Phone: <strong>{profile.phone}</strong></>
+          Signed in as <strong>{normalizeIndianPhone(profile.phone) ? formatIndianDisplay(profile.phone) : user.phone}</strong>
+          {profile.email ? (
+            <><br />Email: <strong>{profile.email}</strong></>
           ) : null}
         </p>
         <button type="button" className="btn btn-outline" style={{ padding: '0.6rem 1.2rem', fontSize: '0.75rem' }} onClick={handleLogout}>
@@ -337,12 +418,17 @@ const Account = () => {
           )}
           <label className="font-bold text-sm" htmlFor="profile-name">NAME</label>
           <input id="profile-name" name="name" value={profile.name} onChange={handleProfileChange} required placeholder="Your name" style={inputStyle} aria-label="Your name" />
-          <label className="font-bold text-sm" htmlFor="profile-email">EMAIL</label>
-          <input id="profile-email" name="email" type="email" value={profile.email} onChange={handleProfileChange} required placeholder="Email" style={inputStyle} aria-label="Email" />
-          <label className="font-bold text-sm" htmlFor="profile-phone">PHONE NUMBER</label>
-          <input id="profile-phone" name="phone" type="tel" value={profile.phone} onChange={handleProfileChange} placeholder="Phone number" style={inputStyle} aria-label="Phone number" autoComplete="tel" />
+          <label className="font-bold text-sm" htmlFor="profile-phone">WHATSAPP NUMBER (REQUIRED)</label>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'stretch' }}>
+            <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', padding: '0 0.9rem', border: '1px solid var(--color-border)', borderRadius: '8px', backgroundColor: '#F5F3ED', fontWeight: 800, fontSize: '0.95rem' }}>+91</span>
+            <input id="profile-phone" name="phone" type="tel" value={profile.phone} onChange={handleProfileChange} required placeholder="98765 43210" style={{ ...inputStyle, flex: 1, minWidth: 0 }} aria-label="WhatsApp number (required)" autoComplete="tel-national" inputMode="numeric" maxLength={11} />
+          </div>
+          <label className="font-bold text-sm" htmlFor="profile-email">EMAIL (OPTIONAL)</label>
+          <input id="profile-email" name="email" type="email" value={profile.email} onChange={handleProfileChange} placeholder="Email (optional)" style={inputStyle} aria-label="Email" />
           <label className="font-bold text-sm" htmlFor="profile-address">ADDRESS</label>
           <textarea id="profile-address" name="address" value={profile.address} onChange={handleProfileChange} rows={2} placeholder="Delivery address" style={inputStyle} aria-label="Address" />
+          <label className="font-bold text-sm" htmlFor="profile-pincode">PINCODE</label>
+          <input id="profile-pincode" name="pincode" value={profile.pincode} onChange={handleProfileChange} placeholder="6-digit pincode" style={inputStyle} aria-label="Pincode" inputMode="numeric" maxLength={6} />
           <p className="font-bold text-sm" style={{ marginTop: '0.5rem' }}>CHANGE PASSWORD <span style={{ fontWeight: 400, color: 'var(--color-gray)', textTransform: 'none' }}>(optional)</span></p>
           <input name="currentPassword" type="password" value={profile.currentPassword} onChange={handleProfileChange} placeholder="Current password" style={inputStyle} aria-label="Current password" autoComplete="current-password" />
           <input name="newPassword" type="password" value={profile.newPassword} onChange={handleProfileChange} minLength={6} placeholder="New password (min 6 characters)" style={inputStyle} aria-label="New password" autoComplete="new-password" />

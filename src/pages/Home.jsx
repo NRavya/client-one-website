@@ -11,6 +11,7 @@ const categories = [
   { title: 'ENGRAVED WOODEN CRAFTS', slug: 'engraved-crafts', desc: 'Mandala panels, name plates and more.', icon: <PenTool size={32} /> },
   { title: 'DOG TAG KEYCHAINS', slug: 'dog-tag-keychains', desc: 'Personalized tags, etched to last.', icon: <Tag size={32} /> },
   { title: 'ENGRAVED DATES', slug: 'engraved-dates', desc: 'The days that matter, carved in wood.', icon: <CalendarHeart size={32} /> },
+  { title: 'SALE', slug: 'sale', desc: 'Limited pieces at special prices.', icon: <Tag size={32} /> },
 
 ];
 

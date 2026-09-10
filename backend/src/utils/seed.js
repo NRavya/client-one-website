@@ -11,7 +11,7 @@ async function main() {
   const products = JSON.parse(fs.readFileSync(file, 'utf8'));
   for (const p of products) {
     const image = Array.isArray(p.images) ? p.images[0] : (p.image || null);
-    const data = { product_code: p.product_code, product_name: p.product_name, slug: p.slug, name: p.name, description: p.description || p.shortDescription || '', price: p.price, stock: p.stock ?? 100, image, category: p.category, type: p.type, badge: p.badge || null, active: true };
+    const data = { product_code: p.product_code, product_name: p.product_name, slug: p.slug, name: p.name, description: p.description || p.shortDescription || '', price: p.price, stock: p.stock ?? 100, image, category: p.category, type: p.type, badge: p.badge || null, isOnSale: Boolean(p.isOnSale) || p.badge === 'SALE', active: true };
     await prisma.product.upsert({ where: { slug: p.slug }, update: data, create: data });
   }
   console.log(`Seeded ${products.length} products`);
@@ -19,12 +19,12 @@ async function main() {
   const adminPass = await bcrypt.hash('Admin@123', 10);
   const admin = await prisma.user.upsert({
     where: { email: 'admin@eskraft.in' }, update: {},
-    create: { name: 'Admin', email: 'admin@eskraft.in', phone: '9999999999', password: adminPass, role: 'ADMIN', customer: { create: { name: 'Admin', email: 'admin@eskraft.in', phone: '9999999999' } } }
+    create: { name: 'Admin', email: 'admin@eskraft.in', phone: '+919999999999', password: adminPass, role: 'ADMIN', customer: { create: { name: 'Admin', email: 'admin@eskraft.in', phone: '+919999999999' } } }
   });
   const custPass = await bcrypt.hash('Customer@123', 10);
   await prisma.user.upsert({
     where: { email: 'customer@test.com' }, update: {},
-    create: { name: 'Test Customer', email: 'customer@test.com', phone: '8888888888', password: custPass, role: 'CUSTOMER', customer: { create: { name: 'Test Customer', email: 'customer@test.com', phone: '8888888888', address: 'Test Address' } } }
+    create: { name: 'Test Customer', email: 'customer@test.com', phone: '+918888888888', password: custPass, role: 'CUSTOMER', customer: { create: { name: 'Test Customer', email: 'customer@test.com', phone: '+918888888888', address: 'Test Address', pincode: '600037' } } }
   });
   console.log('Seeded admin (admin@eskraft.in / Admin@123) and customer (customer@test.com / Customer@123)');
 }
