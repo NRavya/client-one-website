@@ -528,6 +528,8 @@ const Header = () => {
           justify-content: space-between;
           padding-top: 1rem;
           padding-bottom: 0.75rem;
+          padding-left: clamp(1.5rem, 6vw, 2rem);
+          padding-right: clamp(1.5rem, 6vw, 2rem);
         }
 
         .mobile-menu-title {
@@ -541,8 +543,8 @@ const Header = () => {
 
         .mobile-menu-list {
           list-style: none;
-          padding: 0;
           margin: 0;
+          padding: 0 clamp(1.5rem, 6vw, 2rem);
           display: flex;
           flex-direction: column;
           gap: clamp(0.35rem, 1.5vw, 0.6rem);
