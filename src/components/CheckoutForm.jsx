@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API } from '../utils/api';
+import { trackPixelEvent } from '../utils/metaPixel';
 import { MIN_ORDER_VALUE } from '../context/CartContext';
 import { load } from '@cashfreepayments/cashfree-js';
 import {
@@ -104,6 +105,13 @@ export default function CheckoutForm({ items, onSuccess }) {
 
         throw new Error(data.error?.message || 'Order creation failed');
       }
+
+      // Order created — customer entered Cashfree checkout.
+      trackPixelEvent('InitiateCheckout', {
+        value: Number(data.data.total || cartSubtotal),
+        currency: 'INR',
+        num_items: items.reduce((s, i) => s + (i.quantity || 1), 0),
+      });
 
       if (data.data.cashfree?.payment_session_id) {
         const mode = (

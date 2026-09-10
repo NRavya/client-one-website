@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import productsData from '../data/products.json';
 import ProductCard from '../components/ProductCard';
+import { trackPixelEvent } from '../utils/metaPixel';
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
@@ -23,6 +24,13 @@ const SearchResults = () => {
     if (value) params.set('q', value);
     navigate(params.toString() ? `/search?${params}` : '/search', { replace: true });
   };
+
+  // Fires once per submitted query (effect depends on `query`, not keystrokes).
+  useEffect(() => {
+    if (query) {
+      trackPixelEvent('Search', { search_string: query });
+    }
+  }, [query]);
 
   return (
     <div className="container section">

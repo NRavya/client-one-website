@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import { CartProvider } from './context/CartContext';
+import { trackPixelEvent } from './utils/metaPixel';
 
 import Home from './pages/Home';
 import Product from './pages/Product';
@@ -27,6 +28,8 @@ const ScrollToTop = () => {
   const { pathname, search } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+    // SPA route change — base pixel in index.html only fires the first PageView.
+    trackPixelEvent('PageView');
   }, [pathname, search]);
   return null;
 };

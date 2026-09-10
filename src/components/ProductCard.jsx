@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import { useCart } from '../context/useCart';
 import { priceInfo } from '../utils/discount';
+import { trackPixelEvent } from '../utils/metaPixel';
 
 const badgeClass = (badge) => {
   if (badge === 'NEW') return 'badge-new';
@@ -18,6 +19,12 @@ const ProductCard = ({ product, showCode = false }) => {
   const handleQuickAdd = (e) => {
     e.preventDefault();
     if (!addItem(product, 1)) return; // guest was redirected to login
+    trackPixelEvent('AddToCart', {
+      content_ids: [product.slug || product.id],
+      content_name: product.name,
+      value: Number(price),
+      currency: 'INR',
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };

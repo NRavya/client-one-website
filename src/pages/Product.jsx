@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ShieldCheck, Truck, RotateCcw, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import productsData from '../data/products.json';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/useCart';
 import { priceInfo } from '../utils/discount';
+import { trackPixelEvent } from '../utils/metaPixel';
 
 const FRAME_SIZES = [
   { label: '9×12 inches', price: 800 },
@@ -28,6 +29,19 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [prevSlug, setPrevSlug] = useState(slug);
+
+  useEffect(() => {
+    if (product) {
+      trackPixelEvent('ViewContent', {
+        content_ids: [product.slug || product.id],
+        content_name: product.name,
+        content_category: product.category,
+        value: displayPrice,
+        currency: 'INR',
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
 
   if (prevSlug !== slug) {
     setPrevSlug(slug);
@@ -57,6 +71,12 @@ const Product = () => {
     // use composite id for frame variants so different sizes are separate cart lines
     if (isFrame) item.id = `${product.id}__${selectedSize.label}`;
     if (!addItem(item, quantity)) return; // guest was redirected to login
+    trackPixelEvent('AddToCart', {
+      content_ids: [product.slug || product.id],
+      content_name: item.name || product.name,
+      value: Number(displayPrice) * Number(quantity),
+      currency: 'INR',
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle, Package, Loader2 } from 'lucide-react';
 import { apiFetch } from '../utils/api';
+import { trackPixelEvent } from '../utils/metaPixel';
 
 const MAX_ATTEMPTS = 6;
 const RETRY_DELAY = 3000;
@@ -266,6 +267,34 @@ const ThankYou = () => {
         paymentStatus === 'SUCCESS' ||
         paymentStatus === 'PAID' ||
         paymentStatus === 'COMPLETED';
+
+    // Fire Purchase once per verified-paid order (never on pending/failed).
+    // sessionStorage guard also survives refresh / repeated verify responses.
+    const purchaseTrackedRef = useRef(null);
+    useEffect(() => {
+        const orderKey = order?.orderNumber || order?.order_id || orderId;
+        if (!loading && !error && isSuccessful && orderKey && purchaseTrackedRef.current !== orderKey) {
+            purchaseTrackedRef.current = orderKey;
+            let alreadyTracked = false;
+            try {
+                alreadyTracked = window.sessionStorage.getItem(`meta-purchase:${orderKey}`) === '1';
+                if (!alreadyTracked) window.sessionStorage.setItem(`meta-purchase:${orderKey}`, '1');
+            } catch {}
+            if (alreadyTracked) return;
+            const contents = items.map((item) => ({
+                id: item.product?.slug || item.product?.id || item.productId || item.id,
+                quantity: item.quantity || item.qty || 1,
+            }));
+            trackPixelEvent('Purchase', {
+                value: Number(amount),
+                currency: 'INR',
+                order_id: orderKey,
+                content_ids: contents.map((c) => String(c.id)),
+                contents,
+                num_items: contents.reduce((s, c) => s + (c.quantity || 1), 0),
+            });
+        }
+    }, [loading, error, isSuccessful, order, orderId, amount]);
 
     return (
         <main className="thank-you-page">
