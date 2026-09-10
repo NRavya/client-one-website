@@ -518,6 +518,8 @@ const Header = () => {
           background-color: var(--color-bg);
           border-top: 1px solid var(--color-border);
           padding-bottom: 1.5rem;
+          max-height: calc(100dvh - 64px);
+          overflow-y: auto;
         }
 
         .mobile-menu-header {
@@ -541,6 +543,9 @@ const Header = () => {
           list-style: none;
           padding: 0;
           margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: clamp(0.35rem, 1.5vw, 0.6rem);
         }
 
         .mobile-menu-link {
@@ -548,7 +553,7 @@ const Header = () => {
           align-items: center;
           gap: 0.75rem;
           width: 100%;
-          padding: 1rem 0;
+          padding: clamp(1rem, 3.5vw + 0.6rem, 1.4rem) 0;
           font-family: var(--font-heading);
           font-size: 1.1rem;
           font-weight: 700;
