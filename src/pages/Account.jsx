@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import InfoPage from '../components/InfoPage';
 import { LogOut, Package, ChevronDown, ChevronUp } from 'lucide-react';
-import { API } from '../utils/api';
+import { API, fetchWithWakeRetry } from '../utils/api';
 import {
   normalizeIndianPhone,
   formatPhoneInput,
@@ -277,12 +277,13 @@ const Account = () => {
         };
 
     try {
-      const res = await fetch(`${API}${endpoint}`, {
+      // Tolerates Render cold starts: retries network-level failures only.
+      // HTTP error statuses still surface the backend's message below.
+      const { data } = await fetchWithWakeRetry(`${API}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      const data = await res.json();
 
       if (!data.success) {
         setAuthError(data.error?.message || 'Something went wrong');
@@ -384,6 +385,15 @@ const Account = () => {
               {authLoading ? 'PLEASE WAIT...' : mode === 'login' ? 'SIGN IN' : 'CREATE ACCOUNT'}
             </button>
           </form>
+          {mode === 'login' && (
+            <p className="text-sm text-gray" style={{ marginTop: '1rem', textTransform: 'none', fontWeight: 400, lineHeight: 1.5 }}>
+              Forgot your password? Email us at{' '}
+              <a href="mailto:eskraft135@gmail.com" style={{ color: 'inherit', fontWeight: 700, textDecoration: 'underline' }}>
+                eskraft135@gmail.com
+              </a>{' '}
+              and we’ll help you get back into your account.
+            </p>
+          )}
         </div>
       </InfoPage>
     );

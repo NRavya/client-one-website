@@ -21,23 +21,44 @@ const loadCart = () => {
 
 // Reconcile stored lines with the catalog so catalog price changes
 // (and discounts) are reflected in the cart. Frame size variants
-// (composite `id__label` ids with their own size price) are left as-is.
-const reconcileCart = (stored) =>
-  stored.map((it) => {
-    if (String(it.id || '').includes('__')) return it;
-    const prod = productsData.find((p) => p.id === it.id || p.slug === it.slug);
-    if (!prod) return it;
-    const info = priceInfo(prod);
-    const next = { ...it, price: info.price };
-    if (info.discounted) {
-      next.mrp = info.mrp;
-      next.discountPercent = 10;
-    } else {
-      delete next.mrp;
-      delete next.discountPercent;
-    }
-    return next;
-  });
+// (composite `id__label` ids with their own size price) are validated
+// against their base id/slug and left as-is when the base matches.
+// Lines that match nothing in the catalog by id, slug, or product_code
+// (e.g. stale/typo'd ids like "eskann0007") are dropped so they can
+// never reach checkout and produce "Product ... not found".
+const findCatalogProduct = (it) => {
+  if (!it || typeof it !== 'object') return undefined;
+  const rawId = String(it.id || '');
+  const baseId = rawId.includes('__') ? rawId.split('__')[0] : rawId;
+  return productsData.find(
+    (p) =>
+      p.id === it.id ||
+      p.slug === it.slug ||
+      (it.product_code && p.product_code === it.product_code) ||
+      (baseId && (p.id === baseId || p.slug === baseId))
+  );
+};
+
+const reconcileCart = (stored) => {
+  if (!Array.isArray(stored)) return [];
+  return stored
+    .filter((it) => Boolean(findCatalogProduct(it)))
+    .map((it) => {
+      if (String(it.id || '').includes('__')) return it;
+      const prod = findCatalogProduct(it);
+      if (!prod) return it;
+      const info = priceInfo(prod);
+      const next = { ...it, price: info.price };
+      if (info.discounted) {
+        next.mrp = info.mrp;
+        next.discountPercent = 10;
+      } else {
+        delete next.mrp;
+        delete next.discountPercent;
+      }
+      return next;
+    });
+};
 
 // ── Provider ────────────────────────────────────────────────
 export const CartProvider = ({ children }) => {

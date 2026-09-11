@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API } from '../utils/api';
+import productsData from '../data/products.json';
 import { trackPixelEvent } from '../utils/metaPixel';
 import { MIN_ORDER_VALUE } from '../context/CartContext';
 import { load } from '@cashfreepayments/cashfree-js';
@@ -13,6 +14,25 @@ const inputStyle = { width:'100%', padding:'0.9rem 1rem', border:'1px solid var(
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const isValidPincode = (v) => /^[1-9]\d{5}$/.test(String(v ?? '').trim());
+
+// Resolve each cart line to the canonical catalog slug (the identifier the
+// order API looks up via `slug`). Matches by slug, id, or product_code so a
+// stale cart identifier can never be forwarded verbatim. Frame size variants
+// (`<id>__<label>`) resolve via their base id/slug. Returns null when the
+// line matches nothing in the authoritative catalog.
+const resolveCanonicalSlug = (item) => {
+  if (!item || typeof item !== 'object') return null;
+  const rawId = String(item.id || '');
+  const baseId = rawId.includes('__') ? rawId.split('__')[0] : rawId;
+  const prod = productsData.find(
+    (p) =>
+      p.slug === item.slug ||
+      p.id === item.id ||
+      (item.product_code && p.product_code === item.product_code) ||
+      (baseId && (p.id === baseId || p.slug === baseId))
+  );
+  return prod ? prod.slug : null;
+};
 
 export default function CheckoutForm({ items, onSuccess }) {
   const user = JSON.parse(localStorage.getItem('eskraft-user') || 'null');
@@ -73,6 +93,22 @@ export default function CheckoutForm({ items, onSuccess }) {
     setMsg('');
 
     try {
+      // Send only lines that resolve to the authoritative catalog, using the
+      // canonical slug. Stale/typo'd lines (e.g. "eskann0007") never match and
+      // are blocked here instead of producing "Product ... not found".
+      const orderItems = items
+        .map((i) => ({ productId: resolveCanonicalSlug(i), quantity: i.quantity }))
+        .filter((o) => Boolean(o.productId) && Number.isInteger(o.quantity) && o.quantity >= 1);
+      if (orderItems.length === 0) {
+        setMsg('Your cart contains only unavailable items. Please clear your cart and re-add products from the catalog.');
+        setLoading(false);
+        return;
+      }
+      if (orderItems.length !== items.length) {
+        setMsg('Some items in your cart are no longer available and were excluded. Please review your cart and try again.');
+        setLoading(false);
+        return;
+      }
       const res = await fetch(`${API}/orders`, {
         method: 'POST',
         headers: {
@@ -80,10 +116,7 @@ export default function CheckoutForm({ items, onSuccess }) {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          items: items.map(i => ({
-            productId: i.slug || i.id,
-            quantity: i.quantity
-          })),
+          items: orderItems,
           customerDetails: { name, email: email || undefined, phone, address, pincode }
         })
       });
@@ -115,7 +148,7 @@ export default function CheckoutForm({ items, onSuccess }) {
 
       if (data.data.cashfree?.payment_session_id) {
         const mode = (
-            import.meta.env.VITE_CASHFREE_ENV || 'sandbox'
+            import.meta.env.VITE_CASHFREE_ENV || (import.meta.env.PROD ? 'production' : 'sandbox')
         ).toLowerCase();
 
         const cashfree = await load({
