@@ -51,12 +51,14 @@ const ThankYou = () => {
                 if (cancelled) return;
 
                 /*
-                 * The backend should return:
-                 *
-                 * verified: true  -> payment confirmed
-                 * verified: false -> payment still pending
+                 * The backend returns `verified` at the top level and the
+                 * order itself as `data`:
+                 *   { success: true, verified: true, data: <order> }
+                 * (data?.verified / data?.order fallbacks kept for compat.)
                  */
-                const verified = response.data?.verified === true;
+                const verified =
+                    response.verified === true ||
+                    response.data?.verified === true;
 
                 if (verified) {
                     /*
@@ -65,8 +67,11 @@ const ThankYou = () => {
                      * Use the order returned by the verification endpoint
                      * if available. Otherwise fetch the order normally.
                      */
-                    if (response.data?.order) {
-                        setOrder(response.data.order);
+                    const verifiedOrder =
+                        response.data?.order ||
+                        (response.data?.orderNumber ? response.data : null);
+                    if (verifiedOrder) {
+                        setOrder(verifiedOrder);
                     } else {
                         const orderResponse = await apiFetch(
                             `/orders/${orderId}`
@@ -159,6 +164,73 @@ const ThankYou = () => {
     }, [orderId]);
 
     /* ─────────────────────────────
+       Derived order view-model.
+       Hoisted above all early returns so the hooks below run in the
+       same order on every render (Rules of Hooks). Previously useRef
+       + the Purchase useEffect sat below the loading/error returns:
+       initial renders (loading) skipped them, then the first loaded
+       render added two hooks -> React threw "Rendered more hooks
+       than during the previous render" and the page went blank.
+    ───────────────────────────── */
+
+    const orderNumber =
+        order?.orderNumber ||
+        order?.order_id ||
+        orderId;
+
+    const amount =
+        order?.totalAmount ??
+        order?.amount ??
+        order?.order_amount ??
+        order?.total ??
+        0;
+
+    const items =
+        order?.items ||
+        order?.orderItems ||
+        [];
+
+    const paymentStatus = String(
+        order?.payment?.status ||
+        order?.paymentStatus ||
+        order?.payment_status ||
+        'PENDING'
+    ).toUpperCase();
+
+    const isSuccessful =
+        paymentStatus === 'SUCCESS' ||
+        paymentStatus === 'PAID' ||
+        paymentStatus === 'COMPLETED';
+
+    // Fire Purchase once per verified-paid order (never on pending/failed).
+    // sessionStorage guard also survives refresh / repeated verify responses.
+    const purchaseTrackedRef = useRef(null);
+    useEffect(() => {
+        const orderKey = order?.orderNumber || order?.order_id || orderId;
+        if (!loading && !error && isSuccessful && orderKey && purchaseTrackedRef.current !== orderKey) {
+            purchaseTrackedRef.current = orderKey;
+            let alreadyTracked = false;
+            try {
+                alreadyTracked = window.sessionStorage.getItem(`meta-purchase:${orderKey}`) === '1';
+                if (!alreadyTracked) window.sessionStorage.setItem(`meta-purchase:${orderKey}`, '1');
+            } catch {}
+            if (alreadyTracked) return;
+            const contents = items.map((item) => ({
+                id: item.product?.slug || item.product?.id || item.productId || item.id,
+                quantity: item.quantity || item.qty || 1,
+            }));
+            trackPixelEvent('Purchase', {
+                value: Number(amount),
+                currency: 'INR',
+                order_id: orderKey,
+                content_ids: contents.map((c) => String(c.id)),
+                contents,
+                num_items: contents.reduce((s, c) => s + (c.quantity || 1), 0),
+            });
+        }
+    }, [loading, error, isSuccessful, order, orderId, amount]);
+
+    /* ─────────────────────────────
        Loading / Verification
     ───────────────────────────── */
 
@@ -236,65 +308,9 @@ const ThankYou = () => {
     }
 
     /* ─────────────────────────────
-       Order data
+       Order data (view-model + Purchase effect live above the early
+       returns to preserve hook order — see above).
     ───────────────────────────── */
-
-    const orderNumber =
-        order?.orderNumber ||
-        order?.order_id ||
-        orderId;
-
-    const amount =
-        order?.totalAmount ??
-        order?.amount ??
-        order?.order_amount ??
-        order?.total ??
-        0;
-
-    const items =
-        order?.items ||
-        order?.orderItems ||
-        [];
-
-    const paymentStatus = String(
-        order?.payment?.status ||
-        order?.paymentStatus ||
-        order?.payment_status ||
-        'PENDING'
-    ).toUpperCase();
-
-    const isSuccessful =
-        paymentStatus === 'SUCCESS' ||
-        paymentStatus === 'PAID' ||
-        paymentStatus === 'COMPLETED';
-
-    // Fire Purchase once per verified-paid order (never on pending/failed).
-    // sessionStorage guard also survives refresh / repeated verify responses.
-    const purchaseTrackedRef = useRef(null);
-    useEffect(() => {
-        const orderKey = order?.orderNumber || order?.order_id || orderId;
-        if (!loading && !error && isSuccessful && orderKey && purchaseTrackedRef.current !== orderKey) {
-            purchaseTrackedRef.current = orderKey;
-            let alreadyTracked = false;
-            try {
-                alreadyTracked = window.sessionStorage.getItem(`meta-purchase:${orderKey}`) === '1';
-                if (!alreadyTracked) window.sessionStorage.setItem(`meta-purchase:${orderKey}`, '1');
-            } catch {}
-            if (alreadyTracked) return;
-            const contents = items.map((item) => ({
-                id: item.product?.slug || item.product?.id || item.productId || item.id,
-                quantity: item.quantity || item.qty || 1,
-            }));
-            trackPixelEvent('Purchase', {
-                value: Number(amount),
-                currency: 'INR',
-                order_id: orderKey,
-                content_ids: contents.map((c) => String(c.id)),
-                contents,
-                num_items: contents.reduce((s, c) => s + (c.quantity || 1), 0),
-            });
-        }
-    }, [loading, error, isSuccessful, order, orderId, amount]);
 
     return (
         <main className="thank-you-page">
